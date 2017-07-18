@@ -1,0 +1,9 @@
+{
+  "name": "fill-database-out",
+  "version": "0.0.0",
+  "description": "FillDatabaseOut",
+  "main": "app.js",
+  "author": {
+    "name": "Arkadiy_Shuvaev"
+  }
+}
