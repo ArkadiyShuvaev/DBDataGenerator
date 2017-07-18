@@ -5,5 +5,8 @@
   "main": "app.js",
   "author": {
     "name": "Arkadiy_Shuvaev"
+  },
+  "dependencies": {
+    "mssql": "^4.0.4"
   }
 }

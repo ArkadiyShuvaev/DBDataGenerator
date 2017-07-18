@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "FillDatabaseOut", "FillDatabaseOut\FillDatabaseOut.njsproj", "{68041FC6-2E46-4901-9DAB-FE24973C44C2}"
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "DbDataGenerator", "DbDataGenerator\DbDataGenerator.njsproj", "{68041FC6-2E46-4901-9DAB-FE24973C44C2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
