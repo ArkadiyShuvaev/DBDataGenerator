@@ -1,3 +1,27 @@
 {
-  "connectionString" : "empty"
+  "connectionSettings": {
+    "userName": "sa",
+    "password": "Engine123",
+    "server": "localhost" 
+  },
+  "databases": [
+    {
+      "name": "DataGeneratorApp",
+      "tables": [
+        {
+          "name": "Table_1",
+          "columns": [
+            {
+              "name": "guid",
+              "type": "uniqueidentifier"
+            },
+            {
+              "name": "dataId",
+              "type": "INTEGER"
+            }
+          ]
+        }
+      ] 
+    }
+  ]
 }

@@ -7,6 +7,6 @@
     "name": "Arkadiy_Shuvaev"
   },
   "dependencies": {
-    "mssql": "^4.0.4"
+    "tedious": "^2.0.0"
   }
 }

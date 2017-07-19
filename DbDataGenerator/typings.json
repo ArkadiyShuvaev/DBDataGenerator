@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "tedious": "registry:dt/tedious#1.8.0+20160915014424"
+  }
+}

@@ -1,11 +1,14 @@
 ﻿import {ConfigManager} from "./ConfigManager";
-import { DataBaseFiller } from "./DataBaseFiller";
-import {DatabaseRepository} from "./DatabaseRepository";
+import { DataBaseService } from "./DataBaseService";
+import {MsSqlDatabaseRepository as DatabaseRepository} from "./MsSqlDatabaseRepository";
+import {DataGenerator} from "./DataGenerator";
+import { IDataGenerator } from "./Abstractions/IDataGenerator";
 const configPath = "../app.config.json";
 const configManager = new ConfigManager(configPath);
 
-var config = configManager.getConfig();
+const config = configManager.getConfig();
 console.log(config);
-var dbRepo = new DatabaseRepository(config);
-
-var dbFiller = new DataBaseFiller(dbRepo);
+const dbRepo = new DatabaseRepository(config);
+const dataGenerator: IDataGenerator = new DataGenerator();
+const service = new DataBaseService(dbRepo, dataGenerator, config);
+service.fillOutSync();

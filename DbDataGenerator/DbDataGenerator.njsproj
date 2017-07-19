@@ -44,6 +44,8 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="typings.json" />
+    <Content Include="typings\modules\tedious\typings.json" />
     <TypeScriptCompile Include="src\app.ts" />
     <Content Include="app.config.json">
       <Publish>True</Publish>
@@ -51,11 +53,17 @@
     <Content Include="package.json" />
     <Content Include="README.md" />
     <TypeScriptCompile Include="Scripts\typings\node\node.d.ts" />
+    <TypeScriptCompile Include="src\ColumnInformation.ts" />
+    <TypeScriptCompile Include="src\ColumnInformations.ts" />
     <TypeScriptCompile Include="src\ConfigManager.ts" />
-    <TypeScriptCompile Include="src\DataBaseFiller.ts" />
-    <TypeScriptCompile Include="src\DatabaseRepository.ts" />
+    <TypeScriptCompile Include="src\DataBaseService.ts" />
+    <TypeScriptCompile Include="src\MsSqlDatabaseRepository.ts" />
     <TypeScriptCompile Include="src\Abstractions\IAppConfig.ts" />
     <TypeScriptCompile Include="src\Abstractions\IDbRepository.ts" />
+    <TypeScriptCompile Include="src\DataGenerator.ts" />
+    <TypeScriptCompile Include="src\Abstractions\IDataGenerator.ts" />
+    <TypeScriptCompile Include="typings\index.d.ts" />
+    <TypeScriptCompile Include="typings\modules\tedious\index.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\" />
@@ -63,6 +71,9 @@
     <Folder Include="Scripts\typings\" />
     <Folder Include="Scripts\typings\node\" />
     <Folder Include="src\Abstractions\" />
+    <Folder Include="typings\" />
+    <Folder Include="typings\modules\" />
+    <Folder Include="typings\modules\tedious\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />

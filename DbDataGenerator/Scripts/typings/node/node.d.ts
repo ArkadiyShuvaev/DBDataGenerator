@@ -874,7 +874,6 @@ declare module "os" {
 
 declare module "https" {
     import * as tls from "tls";
-    import * as events from "events";
     import * as http from "http";
 
     export interface ServerOptions {
@@ -933,7 +932,6 @@ declare module "punycode" {
 }
 
 declare module "repl" {
-    import * as stream from "stream";
     import * as events from "events";
 
     export interface ReplOptions {
@@ -952,7 +950,6 @@ declare module "repl" {
 
 declare module "readline" {
     import * as events from "events";
-    import * as stream from "stream";
 
     export interface Key {
         sequence?: string;
