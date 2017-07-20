@@ -7,6 +7,7 @@
     "name": "Arkadiy_Shuvaev"
   },
   "dependencies": {
+    "es6-promise": "^4.1.1",
     "tedious": "^2.0.0"
   }
 }

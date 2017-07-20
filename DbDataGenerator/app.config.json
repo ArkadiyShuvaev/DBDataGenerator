@@ -13,11 +13,11 @@
           "columns": [
             {
               "name": "guid",
-              "type": "uniqueidentifier"
+              "type": "UniqueIdentifier"
             },
             {
               "name": "dataId",
-              "type": "INTEGER"
+              "type": "Int"
             }
           ]
         }

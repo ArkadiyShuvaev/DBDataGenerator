@@ -1,6 +1,6 @@
-import {ColumnInformations} from "../ColumnInformations";
+import { ColumnInformations } from "../ColumnInformation/ColumnInformations";
+import { Thenable } from "es6-promise";
 
 export interface IDbRepository {
-    save(): boolean;
-    getTableMetadata(name: string): ColumnInformations;
+    getColumnMetadata(dbName: string): Thenable<ColumnInformations>;
 }

@@ -13,19 +13,26 @@ export class DataBaseService {
         this.repository = repository;
     }
 
-    fillOutSync(): any {
+    fillOut(): any {
         for (let db of this.config.databases) {
-            this.fillOutDbSync(db);
+            this.fillOutDb(db);
         }
     }
 
-    fillOutDbSync(dbSettings: IDbSettings): void {
+    fillOutDb(dbSettings: IDbSettings): void {
         for (let table of dbSettings.tables) {
-            this.fillOutTableSync(table);
+
+            const tableColumns = this.repository.getColumnMetadata(dbSettings.name);
+            tableColumns.then(columnInfos => {
+                var cis = columnInfos;
+            });
         }
     }
 
-    fillOutTableSync(tableSettings: ITableSettings): void {
-        const tableColumns = this.repository.getTableMetadata(tableSettings.name);
-    }
+    //fillOutTable(tableSettings: ITableSettings, dbSettings: IDbSettings): void {
+    //    const tableColumns = this.repository.getColumnMetadatas(tableSettings.name, dbSettings.name);
+    //    tableColumns.then(columnInfos => {
+    //        var cis = columnInfos;
+    //    });
+    //}
 }
