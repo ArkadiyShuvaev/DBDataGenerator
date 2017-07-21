@@ -130,45 +130,7 @@ export class MsSqlDatabaseRepository implements IDbRepository {
 
         return new Connection(config);
     }
-
-    getUserTables(dbName: string): Thenable<Array<string>> {
-
-        return new Promise((resolve, reject) => {
-
-            const userTables: Array<string> = [];
-
-            const connection = this.createConnection(dbName);
-
-            const request =
-                new Request(`SELECT S.name as Owner, T.name as TableName FROM sys.tables AS T
-                             INNER JOIN sys.schemas AS S ON S.schema_id = T.schema_id
-                             LEFT JOIN sys.extended_properties AS EP ON EP.major_id = T.[object_id]
-                             WHERE (EP.class_desc IS NULL 
-                                OR (EP.class_desc <> 'OBJECT_OR_COLUMN'
-                                AND EP.[name] <> 'microsoft_database_tools_support'))`,
-
-                    (error: Error) => {
-
-                        connection.close();
-                        connection.removeAllListeners();
-
-                        if (error) {
-                            reject(error);
-                        }
-
-                        resolve(userTables);
-                    }
-                );
-
-            this.executeRequest(connection, request, (columns: Array<ColumnValue>) => {
-                userTables.push(columns.filter(col => col.metadata.colName === "TableName")[0].value);
-            });
-
-        });
-
-
-    }
-
+    
     invokeFuncAfterConnectedEvent(connection: Connection, func: Function): void {
         connection.on("connect",
             (err: Error) => {
