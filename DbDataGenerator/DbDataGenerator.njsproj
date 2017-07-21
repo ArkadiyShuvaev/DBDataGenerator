@@ -46,7 +46,6 @@
   <ItemGroup>
     <Content Include="typings.json" />
     <Content Include="typings\modules\tedious\typings.json" />
-    <TypeScriptCompile Include="src\Abstractions\IColumnInformationConvertor.ts" />
     <TypeScriptCompile Include="src\app.ts" />
     <Content Include="app.config.json">
       <Publish>True</Publish>
@@ -59,7 +58,6 @@
     <TypeScriptCompile Include="src\ColumnInformation\ColumnInformations.ts" />
     <TypeScriptCompile Include="src\ColumnInformation\ConstraintType.ts" />
     <TypeScriptCompile Include="src\ConfigManager.ts" />
-    <TypeScriptCompile Include="src\Dal\ColumnInformationConvertor.ts" />
     <TypeScriptCompile Include="src\DataBaseService.ts" />
     <TypeScriptCompile Include="src\Logger\ILogger.ts" />
     <TypeScriptCompile Include="src\Logger\Logger.ts" />

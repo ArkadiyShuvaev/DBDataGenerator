@@ -6,4 +6,5 @@ export class ColumnInformation extends BaseColumnInformation {
     isKey: boolean;
     defaultValue: any;
     schemaName: string;
+    columnLength: number;
 }

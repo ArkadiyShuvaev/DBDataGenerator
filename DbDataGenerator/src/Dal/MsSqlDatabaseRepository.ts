@@ -1,11 +1,13 @@
 import {IAppConfig} from "../Abstractions/IAppConfig";
 import { IDbRepository } from "../Abstractions/IDbRepository";
 import { ColumnInformations } from "../ColumnInformation/ColumnInformations";
-import { Connection, Request, TYPES, ColumnValue } from "tedious";
+import { Connection, Request, TYPES, ColumnValue, ColumnValue as IColumnValue, ColumnValue as IColumnValue1 } from "tedious";
 import { ILogger } from "../Logger/ILogger";
 import { Promise, Thenable } from "es6-promise";
-import { ColumnInformationConvertor } from "./ColumnInformationConvertor";
 import { RowColumnInformation } from "../ColumnInformation/RowColumnInformation";
+import {ColumnInformation} from "../ColumnInformation/ColumnInformation";
+import {ColumnTypeName} from "../ColumnInformation/ColumnTypeName";
+
 
 export class MsSqlDatabaseRepository implements IDbRepository {
 
@@ -79,8 +81,7 @@ export class MsSqlDatabaseRepository implements IDbRepository {
                 (error: Error) => {
 
                     connection.close();
-                    var c = connection.listeners("connect");
-
+                    
                     if (error) {
                         this.logger.error(error.toString());
                         reject(error);
@@ -91,7 +92,7 @@ export class MsSqlDatabaseRepository implements IDbRepository {
         );
         
         this.executeRequest(connection, request, (columns: Array<ColumnValue>) => {
-            const convertor = new ColumnInformationConvertor(columns);
+            const convertor = new MsSqlDatabaseRepository.ColumnInformationConvertor(columns);
             const colInfo = convertor.createColumnInformation();
 
             columnInfos.informations.push(colInfo);
@@ -106,10 +107,6 @@ export class MsSqlDatabaseRepository implements IDbRepository {
 
         request.on("row", (columns: Array<ColumnValue>) => {
             func(columns);
-        });
-
-        request.on('requestCompleted', function () {
-            var a = 3;
         });
 
         connection.on("debug", (debugMsg: string) => {
@@ -141,5 +138,65 @@ export class MsSqlDatabaseRepository implements IDbRepository {
                     throw new Error(err.toString());
                 }
         });
+    }
+}
+
+export namespace MsSqlDatabaseRepository {
+
+    export class ColumnInformationConvertor {
+        constructor(columns: Array<IColumnValue>) {
+            this.columns = columns;
+        }
+
+        createColumnInformation(): ColumnInformation {
+
+            const colInfo = new ColumnInformation();
+
+            let colValue = this.columns.filter(col => col.metadata.colName === "DATA_TYPE")[0];
+
+            colInfo.dataType = this.getDataType(colValue.value);
+
+            colValue = this.columns.filter(col => col.metadata.colName === "CHARACTER_MAXIMUM_LENGTH")[0];
+            colInfo.columnLength = colValue.value;
+
+            colValue = this.columns.filter(col => col.metadata.colName === "COLUMN_NAME")[0];
+            colInfo.columnName = colValue.value;
+
+            colValue = this.columns.filter(col => col.metadata.colName === "IS_NULLABLE")[0];
+            colInfo.isNulluble = !(colValue.value === "NO");
+
+            colValue = this.columns.filter(col => col.metadata.colName === "TABLE_SCHEMA")[0];
+            colInfo.schemaName = colValue.value;
+
+            colValue = this.columns.filter(col => col.metadata.colName === "TABLE_NAME")[0];
+            colInfo.tableName = colValue.value;
+
+            colValue = this.columns.filter(col => col.metadata.colName === "COLUMN_DEFAULT")[0];
+            colInfo.defaultValue = colValue.value;
+
+            colValue = this.columns.filter(col => col.metadata.colName === "COLUMN_DEFAULT")[0];
+            colInfo.defaultValue = colValue.value;
+
+            colValue = this.columns.filter(col => col.metadata.colName === "COLUMN_DEFAULT")[0];
+            colInfo.defaultValue = colValue.value;
+
+            colValue = this.columns.filter(col => col.metadata.colName === "CONSTRAINT_TYPE")[0];
+            colInfo.isKey = !(colValue.value == null);
+
+            return colInfo;
+        }
+
+        columns: Array<IColumnValue1>;
+
+        getDataType(value: string): ColumnTypeName {
+            switch (value.toLowerCase()) {
+            case "int":
+                return ColumnTypeName.Int;
+            case "uniqueidentifier":
+                return ColumnTypeName.UniqueIdentifier;
+            default:
+                return ColumnTypeName.Unknown;
+            }
+        }
     }
 }
