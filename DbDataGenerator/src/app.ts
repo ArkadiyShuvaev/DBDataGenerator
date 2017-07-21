@@ -11,5 +11,5 @@ const config = configManager.getConfig();
 console.log(config);
 const dbRepo = new DatabaseRepository(config, new Logger());
 const dataGenerator: IDataGenerator = new DataGenerator();
-const service = new DataBaseService(dbRepo, dataGenerator, config);
-service.fillOut();
+const service = new DataBaseService(dbRepo, dataGenerator, config, new Logger());
+service.populate();

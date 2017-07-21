@@ -9,17 +9,9 @@
       "name": "DataGeneratorApp",
       "tables": [
         {
-          "name": "Table_1",
-          "columns": [
-            {
-              "name": "guid",
-              "type": "UniqueIdentifier"
-            },
-            {
-              "name": "dataId",
-              "type": "Int"
-            }
-          ]
+          "name": "Table_4",
+          "generatedRowCount": 10,
+          "percentOfNull": 30 
         }
       ] 
     }

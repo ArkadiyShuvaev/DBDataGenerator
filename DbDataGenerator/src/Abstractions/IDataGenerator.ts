@@ -1,5 +1,6 @@
+import {ColumnInformation} from "../ColumnInformation/ColumnInformation";
+import {RowColumnInformation} from "../ColumnInformation/RowColumnInformation";
+
 export interface IDataGenerator {
-    getString(): string;
-    getInt32(): number;
-    getGuid(): string;
+    generateRandomValues(columnInformation: ColumnInformation, generatedRowCount: number, percentOfNull?: number): Array<RowColumnInformation>;
 }

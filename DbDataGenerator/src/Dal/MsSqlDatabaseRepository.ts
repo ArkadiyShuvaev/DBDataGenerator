@@ -4,7 +4,8 @@ import { ColumnInformations } from "../ColumnInformation/ColumnInformations";
 import { Connection, Request, TYPES, ColumnValue } from "tedious";
 import { ILogger } from "../Logger/ILogger";
 import { Promise, Thenable } from "es6-promise";
-import {ColumnInformationConvertor} from "./ColumnInformationConvertor";
+import { ColumnInformationConvertor } from "./ColumnInformationConvertor";
+import { RowColumnInformation } from "../ColumnInformation/RowColumnInformation";
 
 export class MsSqlDatabaseRepository implements IDbRepository {
 
@@ -12,6 +13,37 @@ export class MsSqlDatabaseRepository implements IDbRepository {
         this.logger = logger;
         this.config = config;
     }
+
+    saveColumns(rows: Array<Array<RowColumnInformation>>, dbName: string, tableName: string): Thenable<number> {
+
+        return new Promise((resolve: (value?: number) => void, reject: (value?: Error) => void) => {
+
+            const connection = this.createConnection(dbName);
+
+            const bulkLoad = connection.newBulkLoad(tableName, (error: Error, rowCount: number) => {
+
+                connection.close();
+
+                if (error) {
+                    this.logger.error(error.toString());
+                    reject(error);
+                }
+
+                resolve(rowCount);
+            });
+
+            bulkLoad.addColumn("Str", TYPES.NChar, { length: 4000, nullable: true });
+
+            for (let row of rows) {
+                bulkLoad.addRow({ Str: row[0].value });
+            }
+            
+            
+            this.invokeFuncAfterConnectedEvent(connection, () => connection.execBulkLoad(bulkLoad));
+            
+        });
+    }
+
 
     getColumnMetadata(dbName: string): Thenable<ColumnInformations> {
 
@@ -21,7 +53,7 @@ export class MsSqlDatabaseRepository implements IDbRepository {
     }
     
     getTableMetadataImpl(dbName: string,
-        resolve: (value?: Object | PromiseLike<Object>) => void, reject: (reason?: any) => void): any {
+        resolve: (value?: Object | PromiseLike<ColumnInformations>) => void, reject: (reason?: Error) => void): any {
 
         const columnInfos = new ColumnInformations();
         const connection = this.createConnection(dbName);
@@ -47,6 +79,7 @@ export class MsSqlDatabaseRepository implements IDbRepository {
                 (error: Error) => {
 
                     connection.close();
+                    var c = connection.listeners("connect");
 
                     if (error) {
                         this.logger.error(error.toString());
@@ -75,19 +108,16 @@ export class MsSqlDatabaseRepository implements IDbRepository {
             func(columns);
         });
 
+        request.on('requestCompleted', function () {
+            var a = 3;
+        });
+
         connection.on("debug", (debugMsg: string) => {
             this.logger.debug(debugMsg);
         });
 
-        connection.on("connect",
-            (err: Error) => {
-                if (err == null) {
-                    connection.execSql(request);
-                } else {
-                    this.logger.error(err.toString());
-                    throw new Error(err.toString());
-                }
-            });
+        this.invokeFuncAfterConnectedEvent(connection, () => {connection.execSql(request)});
+       
     }
 
     createConnection(dbName: string):Connection {
@@ -120,6 +150,7 @@ export class MsSqlDatabaseRepository implements IDbRepository {
                     (error: Error) => {
 
                         connection.close();
+                        connection.removeAllListeners();
 
                         if (error) {
                             reject(error);
@@ -136,5 +167,17 @@ export class MsSqlDatabaseRepository implements IDbRepository {
         });
 
 
+    }
+
+    invokeFuncAfterConnectedEvent(connection: Connection, func: Function): void {
+        connection.on("connect",
+            (err: Error) => {
+                if (err == null) {
+                    func();
+                } else {
+                    this.logger.error(err.toString());
+                    throw new Error(err.toString());
+                }
+        });
     }
 }

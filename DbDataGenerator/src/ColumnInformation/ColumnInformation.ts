@@ -1,9 +1,7 @@
-import {ColumnTypeName} from "./ColumnTypeName";
+import {BaseColumnInformation} from "./BaseColumnInformation";
 
-export class ColumnInformation {
+export class ColumnInformation extends BaseColumnInformation {
     tableName: string;
-    columnName: string;
-    dataType: ColumnTypeName;
     isNulluble: boolean;
     isKey: boolean;
     defaultValue: any;

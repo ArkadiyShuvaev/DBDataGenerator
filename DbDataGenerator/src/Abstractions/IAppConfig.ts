@@ -15,6 +15,8 @@ export interface IColumnSettings {
 export interface ITableSettings {
     name: string;
     columns: Array<IColumnSettings>;
+    generatedRowCount: number;
+    percentOfNull: number;
 }
 
 export interface IDbSettings {

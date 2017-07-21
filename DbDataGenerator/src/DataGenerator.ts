@@ -1,6 +1,45 @@
 import { IDataGenerator } from "./Abstractions/IDataGenerator";
+import {ColumnInformation} from "./ColumnInformation/ColumnInformation";
+import {RowColumnInformation} from "./ColumnInformation/RowColumnInformation";
 
 export class DataGenerator implements IDataGenerator {
+
+    generateRandomValues(columnInformation: ColumnInformation, generatedRowCount: number, percentOfNull: number): Array<RowColumnInformation> {
+
+        if (generatedRowCount == null || (generatedRowCount < 0 || generatedRowCount > 100)) {
+            throw new RangeError("generatedRowCount is out of range");
+        }
+        
+        if (percentOfNull == null || (percentOfNull < 0 || percentOfNull > 100)) {
+            throw new RangeError("percentOfNull is out of range");
+        }
+
+
+        const result: Array<RowColumnInformation> = [];
+
+        for (let i = 0; i < generatedRowCount; i++) {
+            const rowInfo = new RowColumnInformation();
+
+            rowInfo.columnName = columnInformation.columnName;
+            rowInfo.dataType = columnInformation.dataType;
+
+            if (percentOfNull === 0) {
+                rowInfo.value = i.toString();
+            }
+            if (percentOfNull === 100) {
+                rowInfo.value = null;
+            }
+
+            const isValueShouldBeNull = (this.getRndInteger(0, 100) <= percentOfNull);
+
+            rowInfo.value = isValueShouldBeNull ? null : this.getRndInteger(-2147483648, 2147483647).toString();
+
+            result.push(rowInfo);
+        }
+
+        return result;
+    }
+
     getString(): string { throw new Error("Not implemented"); }
 
     getInt32(): number { return this.getRndInteger(-2147483648, 2147483647) }

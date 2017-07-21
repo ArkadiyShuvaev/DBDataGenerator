@@ -25,6 +25,9 @@ export class ColumnInformationConvertor implements IColumnInformationConvertor {
 
         colValue = this.columns.filter(col => col.metadata.colName === "TABLE_SCHEMA")[0];
         colInfo.schemaName = colValue.value;
+        
+        colValue = this.columns.filter(col => col.metadata.colName === "TABLE_NAME")[0];
+        colInfo.tableName = colValue.value;
 
         colValue = this.columns.filter(col => col.metadata.colName === "COLUMN_DEFAULT")[0];
         colInfo.defaultValue = colValue.value;
