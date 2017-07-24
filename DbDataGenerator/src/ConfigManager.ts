@@ -2,8 +2,7 @@ import { IAppConfig } from "./Abstractions/IAppConfig";
 import * as fs from "fs";
 
 export class ConfigManager {
-    private PercentOfNullsPerColumnDefaultValue: 50;
-
+    
     constructor(configPath: string) {
 
         if (configPath == null) {
