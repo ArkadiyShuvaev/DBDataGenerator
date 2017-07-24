@@ -1,5 +1,5 @@
 ﻿import {ConfigManager} from "./ConfigManager";
-import { DataService as DataBaseService } from "./DataService";
+import { DataService } from "./DataService";
 import {MsSqlDatabaseRepository as DatabaseRepository} from "./Dal/MsSqlDatabaseRepository";
 import {DataGenerator} from "./DataGenerator";
 import { IDataGenerator } from "./Abstractions/IDataGenerator";
@@ -10,5 +10,5 @@ const configManager = new ConfigManager(configPath);
 const config = configManager.getConfig();
 const dbRepo = new DatabaseRepository(config, new Logger());
 const dataGenerator: IDataGenerator = new DataGenerator();
-const service = new DataBaseService(dbRepo, dataGenerator, config, new Logger());
-service.populate();
+const dataService = new DataService(dbRepo, dataGenerator, config, new Logger());
+dataService.populate();

@@ -79,14 +79,7 @@ export class DataService {
         
     }
 
-    //fillOutTable(tableSettings: ITableSettings, dbSettings: IDbSettings): void {
-    //    const tableColumns = this.repository.getColumnMetadatas(tableSettings.name, dbSettings.name);
-    //    tableColumns.then(columnInfos => {
-    //        var cis = columnInfos;
-    //    });
-    //}
-    
-    createColumnData(columnMeta: ColumnMetadata, generatedRowCount: number, percentOfNullsPerColumn: number, columnRegularExpression: string): DbParameter[] {
+    private createColumnData(columnMeta: ColumnMetadata, generatedRowCount: number, percentOfNullsPerColumn: number, columnRegularExpression: string): DbParameter[] {
         
         const result: Array<DbParameter> = [];
         const randomValues = this.invokeDataGeneratorMethod(columnMeta, generatedRowCount, percentOfNullsPerColumn, columnRegularExpression);
@@ -102,8 +95,6 @@ export class DataService {
 
             result.push(dbParam);
         }
-
-
         return result;
     }
 
@@ -124,13 +115,26 @@ export class DataService {
         return (dbSettings.percentOfNullsPerColumn == null) ? 0 : dbSettings.percentOfNullsPerColumn;
     }
 
-    invokeDataGeneratorMethod(columnMeta: DbParameter, generatedRowCount: number, percentOfNullsPerColumn: number, columnRegularExpression: string): Object[] {
-        
+    private invokeDataGeneratorMethod(columnMeta: DbParameter, generatedRowCount: number, percentOfNullsPerColumn: number, columnRegularExpression: string): Object[] {
+
         switch (columnMeta.dbType) {
             case DbType.Int:
                 const intSettings = new IntGenerationSettings(columnMeta.isNulluble);
                 return this.generator.generateRandomIntValues(intSettings, generatedRowCount, percentOfNullsPerColumn);
-            
+
+            case DbType.SmallInt:
+                const int16Settings = new IntGenerationSettings(columnMeta.isNulluble);
+                int16Settings.minimalValue = -32768;
+                int16Settings.maximumValue = 32767;
+                return this.generator.generateRandomIntValues(int16Settings, generatedRowCount, percentOfNullsPerColumn);
+
+            case DbType.TinyInt:
+                const int8Settings = new IntGenerationSettings(columnMeta.isNulluble);
+                int8Settings.minimalValue = 0;
+                int8Settings.maximumValue = 255;
+                return this.generator.generateRandomIntValues(int8Settings, generatedRowCount, percentOfNullsPerColumn);
+
+
             case DbType.Char:
             case DbType.NChar:
             case DbType.VarChar:
@@ -140,8 +144,10 @@ export class DataService {
                 return this.generator.generateRandomCharacterValues(charSettings, generatedRowCount, percentOfNullsPerColumn);
 
             default:
+                throw new TypeError(
+                    `The '${columnMeta.dbType.toString()}' dbType of the '${columnMeta.parameterName
+                    }' column is not supported.`);
+
         }
-
-
     }
 }

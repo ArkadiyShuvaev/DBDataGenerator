@@ -74,14 +74,7 @@ export class DataGenerator implements IDataGenerator {
 
         return array;
     }
-
-
-    getString(): string { throw new Error("Not implemented"); }
-
-    getInt32(): number { return this.getRndInteger(-2147483648, 2147483647) }
-
-    getGuid(): string { throw new Error("Not implemented"); }
-
+    
     private getRndInteger(min: number, max: number): number {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
