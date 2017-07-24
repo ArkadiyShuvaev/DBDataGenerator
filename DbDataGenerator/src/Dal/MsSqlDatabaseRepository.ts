@@ -1,13 +1,13 @@
 import {IAppConfig} from "../Abstractions/IAppConfig";
 import { IDbRepository } from "../Abstractions/IDbRepository";
-import { ColumnInformations } from "../ColumnInformation/ColumnInformations";
-import { Connection, Request, TYPES, ColumnValue, ColumnValue as IColumnValue, ColumnValue as IColumnValue1 } from "tedious";
+import { ColumnsMetadata as ColumnInformations } from "../ColumnInformation/ColumnsMetadata";
+import { Connection, Request, ColumnValue } from "tedious";
 import { ILogger } from "../Logger/ILogger";
 import { Promise, Thenable } from "es6-promise";
-import { RowColumnInformation } from "../ColumnInformation/RowColumnInformation";
-import {ColumnInformation} from "../ColumnInformation/ColumnInformation";
-import {ColumnTypeName} from "../ColumnInformation/ColumnTypeName";
-
+import { DbParameter } from "../ColumnInformation/DbParameter";
+import {ColumnMetadata as ColumnInformation} from "../ColumnInformation/ColumnMetadata";
+import {DbType} from "../ColumnInformation/DbType";
+import {TediousDbTypeConvertor as DbTypeTediousConvertor} from "./TediousDbTypeConvertor";
 
 export class MsSqlDatabaseRepository implements IDbRepository {
 
@@ -16,7 +16,7 @@ export class MsSqlDatabaseRepository implements IDbRepository {
         this.config = config;
     }
 
-    saveColumns(rows: Array<Array<RowColumnInformation>>, dbName: string, tableName: string): Thenable<number> {
+    saveColumns(rows: Array<Array<DbParameter>>, dbName: string, tableName: string): Thenable<number> {
 
         return new Promise((resolve: (value?: number) => void, reject: (value?: Error) => void) => {
 
@@ -33,11 +33,19 @@ export class MsSqlDatabaseRepository implements IDbRepository {
 
                 resolve(rowCount);
             });
-
-            bulkLoad.addColumn("Str", TYPES.NChar, { length: 4000, nullable: true });
-
+            
+            for (let column of rows[0]) {
+                bulkLoad.addColumn(column.parameterName, DbTypeTediousConvertor.convertToTediousSqlType(column.dbType), { length: column.size, nullable: column.isNulluble });
+            }
+            
             for (let row of rows) {
-                bulkLoad.addRow({ Str: row[0].value });
+
+                const rowVal: any = {};
+                row.forEach(col => {
+                    rowVal[col.parameterName] = col.value;
+                });
+
+                bulkLoad.addRow(rowVal);
             }
             
             
@@ -45,7 +53,6 @@ export class MsSqlDatabaseRepository implements IDbRepository {
             
         });
     }
-
 
     getColumnMetadata(dbName: string): Thenable<ColumnInformations> {
 
@@ -144,7 +151,7 @@ export class MsSqlDatabaseRepository implements IDbRepository {
 export namespace MsSqlDatabaseRepository {
 
     export class ColumnInformationConvertor {
-        constructor(columns: Array<IColumnValue>) {
+        constructor(columns: Array<ColumnValue>) {
             this.columns = columns;
         }
 
@@ -154,13 +161,13 @@ export namespace MsSqlDatabaseRepository {
 
             let colValue = this.columns.filter(col => col.metadata.colName === "DATA_TYPE")[0];
 
-            colInfo.dataType = this.getDataType(colValue.value);
+            colInfo.dbType = this.getDbType(colValue.value);
 
             colValue = this.columns.filter(col => col.metadata.colName === "CHARACTER_MAXIMUM_LENGTH")[0];
-            colInfo.columnLength = colValue.value;
+            colInfo.size = colValue.value;
 
             colValue = this.columns.filter(col => col.metadata.colName === "COLUMN_NAME")[0];
-            colInfo.columnName = colValue.value;
+            colInfo.parameterName = colValue.value;
 
             colValue = this.columns.filter(col => col.metadata.colName === "IS_NULLABLE")[0];
             colInfo.isNulluble = !(colValue.value === "NO");
@@ -173,10 +180,7 @@ export namespace MsSqlDatabaseRepository {
 
             colValue = this.columns.filter(col => col.metadata.colName === "COLUMN_DEFAULT")[0];
             colInfo.defaultValue = colValue.value;
-
-            colValue = this.columns.filter(col => col.metadata.colName === "COLUMN_DEFAULT")[0];
-            colInfo.defaultValue = colValue.value;
-
+            
             colValue = this.columns.filter(col => col.metadata.colName === "COLUMN_DEFAULT")[0];
             colInfo.defaultValue = colValue.value;
 
@@ -186,16 +190,106 @@ export namespace MsSqlDatabaseRepository {
             return colInfo;
         }
 
-        columns: Array<IColumnValue1>;
+        columns: Array<ColumnValue>;
 
-        getDataType(value: string): ColumnTypeName {
+        getDbType(value: string): DbType {
+            
             switch (value.toLowerCase()) {
-            case "int":
-                return ColumnTypeName.Int;
-            case "uniqueidentifier":
-                return ColumnTypeName.UniqueIdentifier;
-            default:
-                return ColumnTypeName.Unknown;
+                case "int":
+                    return DbType.Int;
+
+                case "uniqueidentifier":
+                    return DbType.UniqueIdentifier;
+
+                case "nchar":
+                    return DbType.NChar;
+
+                case "nvarchar":
+                    return DbType.NVarChar;
+
+                case "char":
+                    return DbType.Char;
+
+                case "varchar":
+                    return DbType.VarChar;
+
+                case "bigint":
+                    return DbType.BigInt;
+
+                case "binary":
+                    return DbType.Binary;
+
+                case "bit":
+                    return DbType.Bit;
+
+                case "dateime":
+                    return DbType.DateTime;
+
+                case "decimal":
+                    return DbType.Decimal;
+
+                case "float":
+                    return DbType.Float;
+
+                case "image":
+                    return DbType.Image;
+
+                case "money":
+                    return DbType.Money;
+
+                case "ntext":
+                    return DbType.NText;
+
+                case "real":
+                    return DbType.Real;
+
+                case "smalldatetime":
+                    return DbType.SmallDateTime;
+
+                case "smallint":
+                    return DbType.SmallInt;
+
+                case "smallmoney":
+                    return DbType.SmallMoney;
+
+                case "text":
+                    return DbType.Text;
+
+                case "timestamp":
+                    return DbType.Timestamp;
+
+                case "tinyint":
+                    return DbType.TinyInt;
+
+                case "varbinary":
+                    return DbType.VarBinary;
+
+                case "variant":
+                    return DbType.VarBinary;
+
+                case "xml":
+                    return DbType.Xml;
+
+                case "udt":
+                    return DbType.Udt;
+
+                case "structured":
+                    return DbType.Structured;
+
+                case "date":
+                    return DbType.Date;
+
+                case "time":
+                    return DbType.Time;
+
+                case "datetime2":
+                    return DbType.DateTime2;
+
+                case "datetimeoffset":
+                    return DbType.DateTimeOffset;
+
+                default:
+                    throw new Error("The column type cannot be determined");
             }
         }
     }

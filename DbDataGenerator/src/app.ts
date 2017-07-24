@@ -1,5 +1,5 @@
 ﻿import {ConfigManager} from "./ConfigManager";
-import { DataBaseService } from "./DataBaseService";
+import { DataService as DataBaseService } from "./DataService";
 import {MsSqlDatabaseRepository as DatabaseRepository} from "./Dal/MsSqlDatabaseRepository";
 import {DataGenerator} from "./DataGenerator";
 import { IDataGenerator } from "./Abstractions/IDataGenerator";

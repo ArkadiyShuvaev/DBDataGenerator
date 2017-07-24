@@ -9,17 +9,22 @@ export interface IAppConfig {
 
 export interface IColumnSettings {
     name: string;
-    type: string;
+    dataType: string;
+    regularExpression: string;
+    allowNulls: boolean;
+    percentOfNullsPerColumn: number;
 }
 
 export interface ITableSettings {
     name: string;
     columns: Array<IColumnSettings>;
     generatedRowCount: number;
-    percentOfNull: number;
+    percentOfNullsPerColumn: number;
 }
 
 export interface IDbSettings {
     name: string;
     tables: Array<ITableSettings>;
+    percentOfNullsPerColumn: number;
+    generatedRowCount: number;
 }

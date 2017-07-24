@@ -1,6 +1,8 @@
-import {ColumnInformation} from "../ColumnInformation/ColumnInformation";
-import {RowColumnInformation} from "../ColumnInformation/RowColumnInformation";
+import {IIntGenerationSettings, ICharacterGenerationSettings } from "./IGenerationSettings";
 
 export interface IDataGenerator {
-    generateRandomValues(columnInformation: ColumnInformation, generatedRowCount: number, percentOfNull?: number): Array<RowColumnInformation>;
+    generateRandomIntValues(generationSettings: IIntGenerationSettings,
+        generatedRowCount: number, percentOfNullsPerColumn: number): Array<number>;
+    generateRandomCharacterValues(characterGenerationSettings: ICharacterGenerationSettings,
+        generatedRowCount: number, percentOfNullsPerColumn: number): Array<string>;
 }

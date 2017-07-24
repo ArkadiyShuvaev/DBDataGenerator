@@ -45,20 +45,23 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="typings.json" />
+    <Content Include="typings\globals\node\typings.json" />
     <Content Include="typings\modules\tedious\typings.json" />
+    <TypeScriptCompile Include="src\Abstractions\IGenerationSettings.ts" />
     <TypeScriptCompile Include="src\app.ts" />
     <Content Include="app.config.json">
       <Publish>True</Publish>
     </Content>
     <Content Include="package.json" />
     <Content Include="README.md" />
-    <TypeScriptCompile Include="Scripts\typings\node\node.d.ts" />
-    <TypeScriptCompile Include="src\ColumnInformation\ColumnInformation.ts" />
-    <TypeScriptCompile Include="src\ColumnInformation\ColumnTypeName.ts" />
-    <TypeScriptCompile Include="src\ColumnInformation\ColumnInformations.ts" />
+    <TypeScriptCompile Include="src\ColumnInformation\ColumnMetadata.ts" />
+    <TypeScriptCompile Include="src\ColumnInformation\DbType.ts" />
+    <TypeScriptCompile Include="src\ColumnInformation\ColumnsMetadata.ts" />
     <TypeScriptCompile Include="src\ColumnInformation\ConstraintType.ts" />
+    <TypeScriptCompile Include="src\ColumnInformation\DbParameter.ts" />
     <TypeScriptCompile Include="src\ConfigManager.ts" />
-    <TypeScriptCompile Include="src\DataBaseService.ts" />
+    <TypeScriptCompile Include="src\Dal\TediousDbTypeConvertor.ts" />
+    <TypeScriptCompile Include="src\DataService.ts" />
     <TypeScriptCompile Include="src\Logger\ILogger.ts" />
     <TypeScriptCompile Include="src\Logger\Logger.ts" />
     <TypeScriptCompile Include="src\Dal\MsSqlDatabaseRepository.ts" />
@@ -66,19 +69,20 @@
     <TypeScriptCompile Include="src\Abstractions\IDbRepository.ts" />
     <TypeScriptCompile Include="src\DataGenerator.ts" />
     <TypeScriptCompile Include="src\Abstractions\IDataGenerator.ts" />
+    <TypeScriptCompile Include="typings\globals\node\index.d.ts" />
     <TypeScriptCompile Include="typings\index.d.ts" />
     <TypeScriptCompile Include="typings\modules\tedious\index.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\" />
-    <Folder Include="Scripts\" />
-    <Folder Include="Scripts\typings\" />
-    <Folder Include="Scripts\typings\node\" />
     <Folder Include="src\Abstractions\" />
     <Folder Include="src\Logger\" />
     <Folder Include="src\ColumnInformation\" />
     <Folder Include="src\Dal\" />
+    <Folder Include="src\GenerationSettings\" />
     <Folder Include="typings\" />
+    <Folder Include="typings\globals\" />
+    <Folder Include="typings\globals\node\" />
     <Folder Include="typings\modules\" />
     <Folder Include="typings\modules\tedious\" />
   </ItemGroup>

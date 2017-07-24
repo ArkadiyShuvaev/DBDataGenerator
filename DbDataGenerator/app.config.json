@@ -11,7 +11,13 @@
         {
           "name": "Table_4",
           "generatedRowCount": 10,
-          "percentOfNull": 30 
+          "percentOfNullsPerColumn": 30,
+          "columns": [
+            {
+              "name": "Char",
+              "regularExpression": "[A-F]{1,10}" 
+            }
+          ]
         }
       ] 
     }

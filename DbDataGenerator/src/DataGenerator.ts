@@ -1,44 +1,80 @@
 import { IDataGenerator } from "./Abstractions/IDataGenerator";
-import {ColumnInformation} from "./ColumnInformation/ColumnInformation";
-import {RowColumnInformation} from "./ColumnInformation/RowColumnInformation";
+import { IIntGenerationSettings, ICharacterGenerationSettings, IBaseGenerationSettings } from "./Abstractions/IGenerationSettings";
+//import {RandExp} from "randexp";
+const RandExp: any = require("randexp");
 
 export class DataGenerator implements IDataGenerator {
 
-    generateRandomValues(columnInformation: ColumnInformation, generatedRowCount: number, percentOfNull: number): Array<RowColumnInformation> {
 
-        if (generatedRowCount == null || (generatedRowCount < 0 || generatedRowCount > 100)) {
-            throw new RangeError("generatedRowCount is out of range");
+    generateRandomCharacterValues(generationSettings: ICharacterGenerationSettings,
+        generatedRowCount: number, percentOfNulls: number): Array<string> {
+
+        this.throwIfParamsAreNotValid(generationSettings, generatedRowCount, percentOfNulls);
+        if (generationSettings.size == null) {
+            throw new ReferenceError("generationSettings size parameter cannot be null");
         }
-        
-        if (percentOfNull == null || (percentOfNull < 0 || percentOfNull > 100)) {
-            throw new RangeError("percentOfNull is out of range");
+
+        return this.generateValues<string>(generatedRowCount, percentOfNulls, () => {
+
+            let result: string;
+
+            if (generationSettings.regularExpression == null || generationSettings.regularExpression === "") {
+                result = new RandExp(`[a-z0-9._+-]{1,${generationSettings.size}}`).gen();
+            } else {
+                result = new RandExp(generationSettings.regularExpression).gen();
+            }
+
+            return result;
+        });
+
+    }
+
+
+    generateRandomIntValues(generationSettings: IIntGenerationSettings, generatedRowCount: number,
+        percentOfNulls: number): Array<number> {
+
+        this.throwIfParamsAreNotValid(generationSettings, generatedRowCount, percentOfNulls);
+
+        return this.generateValues<number>(generatedRowCount, percentOfNulls, () => {
+            return this.getRndInteger(generationSettings.minimalValue, generationSettings.maximumValue);
+        });
+    }
+    
+    private generateValues<T>(generatedRowCount: number, percentOfNulls: number,
+        generateFunc: () => T): Array<T> {
+
+        if (percentOfNulls === 100) {
+
+            return new Array(percentOfNulls).fill(null);
+
+        } else if (percentOfNulls === 0) {
+            return this.addValuesToArray<T>(generatedRowCount, () => {
+                return generateFunc();
+            });
+
+        } else {
+
+            return this.addValuesToArray<T>(generatedRowCount, () => {
+                const isValueShouldBeNull = (this.getRndInteger(0, 100) <= percentOfNulls);
+                return isValueShouldBeNull
+                    ? null
+                    : generateFunc();
+            });
         }
 
+    }
 
-        const result: Array<RowColumnInformation> = [];
+    private addValuesToArray<T>(generatedRowCount: number, func: () => T): Array<T> {
+
+        const array: Array<T> = [];
 
         for (let i = 0; i < generatedRowCount; i++) {
-            const rowInfo = new RowColumnInformation();
-
-            rowInfo.columnName = columnInformation.columnName;
-            rowInfo.dataType = columnInformation.dataType;
-
-            if (percentOfNull === 0) {
-                rowInfo.value = i.toString();
-            }
-            if (percentOfNull === 100) {
-                rowInfo.value = null;
-            }
-
-            const isValueShouldBeNull = (this.getRndInteger(0, 100) <= percentOfNull);
-
-            rowInfo.value = isValueShouldBeNull ? null : this.getRndInteger(-2147483648, 2147483647).toString();
-
-            result.push(rowInfo);
+            array.push(func());
         }
 
-        return result;
+        return array;
     }
+
 
     getString(): string { throw new Error("Not implemented"); }
 
@@ -49,7 +85,28 @@ export class DataGenerator implements IDataGenerator {
     private getRndInteger(min: number, max: number): number {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
-    
+
+    private throwIfParamsAreNotValid(settings: IBaseGenerationSettings, generatedRowCount: number, percentOfNull: number): void {
+        if (settings == null) {
+            throw new ReferenceError("settings cannot be null");
+        }
+
+        if (generatedRowCount == null) {
+            throw new ReferenceError("generatedRowCount cannot be null");
+        }
+            
+        if(generatedRowCount < 0 || generatedRowCount > 100) {
+            throw new RangeError("generatedRowCount is out of range");
+        }
+
+        if (percentOfNull == null) {
+            throw new ReferenceError("percentOfNull cannot be null");
+        }
+
+        if (percentOfNull < 0 || percentOfNull > 100) {
+            throw new RangeError("percentOfNull is out of range");
+        }
+    }
 }
 
 export namespace DataGenerator {

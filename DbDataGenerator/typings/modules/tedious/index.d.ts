@@ -210,17 +210,17 @@ export interface ConnectionOptions {
 
     /**
      * A boolean, controlling whether the column names returned will have the first letter converted
-     * to lower case (true) or not. This value is ignored if you provide a columnNameReplacer. (default: false).
+     * to lower case (true) or not. This value is ignored if you provide a parameterNameReplacer. (default: false).
      */
     camelCaseColumns?: boolean;
 
     /**
-     * A function with parameters (columnName, index, columnMetaData) and returning a string. If provided,
+     * A function with parameters (parameterName, index, columnMetaData) and returning a string. If provided,
      * this will be called once per column per result-set. The returned value will be used instead of the
      * SQL-provided column name on row and meta data objects. This allows you to dynamically convert between
      * naming conventions. (default: null).
      */
-    columnNameReplacer?: (columnName: string, index: number, columnMetaData: ColumnMetaData) => string;
+    parameterNameReplacer?: (parameterName: string, index: number, columnMetaData: ColumnMetaData) => string;
 
     /**
      * Debug options
