@@ -20,12 +20,12 @@ export interface ICharacterGenerationSettings extends IBaseGenerationSettings {
 
 export interface IIntGenerationSettings extends IBaseGenerationSettings {
     /**
-     * The minimum value of the generated data range. For exemple, the minimum value for the Int32 type is -2147483648.
+     * The minimum value of the generated data range. For example, the minimum value for the Int32 type is -2147483648.
      */
     minimalValue: number;
 
     /**
-     * The minimum value of the generated data range. For exemple, the maximum value for the Int32 type is 2147483647.
+     * The minimum value of the generated data range. For example, the maximum value for the Int32 type is 2147483647.
      */
     maximumValue: number;
 }
