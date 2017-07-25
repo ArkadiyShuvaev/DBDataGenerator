@@ -34,11 +34,11 @@ export interface IIntGenerationSettings extends IBaseGenerationSettings {
 export class BaseGenerationSettings implements IBaseGenerationSettings {
     constructor(isNullValuesAllowed: boolean, sourceResourceDataListFullPath?: string) {
         this.isNullValuesAllowed = isNullValuesAllowed;
-        this.sourceResourceDataListFullPath = sourceResourceDataListFullPath;
+        this.sourceResourceDataListFullPath = sourceResourceDataListFullPath || "";
     }
 
     readonly isNullValuesAllowed: boolean;
-    readonly sourceResourceDataListFullPath: string = null;
+    readonly sourceResourceDataListFullPath: string;
 }
 
 export class CharacterGenerationSettings extends BaseGenerationSettings implements ICharacterGenerationSettings  {

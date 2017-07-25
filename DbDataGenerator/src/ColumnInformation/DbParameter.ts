@@ -3,7 +3,7 @@ import {DbType} from "./DbType";
 export class DbParameter {
     parameterName: string;
     dbType: DbType;
-    value: Object;
+    value: Object | null;
     isNulluble: boolean;
     size: number;
 }

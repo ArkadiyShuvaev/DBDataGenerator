@@ -7,7 +7,7 @@ export class DataGenerator implements IDataGenerator {
 
 
     generateRandomCharacterValues(generationSettings: ICharacterGenerationSettings,
-        generatedRowCount: number, percentOfNulls: number): Array<string> {
+        generatedRowCount: number, percentOfNulls: number): Array<string | null> {
 
         this.throwIfParamsAreNotValid(generationSettings, generatedRowCount, percentOfNulls);
         if (generationSettings.size == null) {
@@ -31,7 +31,7 @@ export class DataGenerator implements IDataGenerator {
 
 
     generateRandomIntValues(generationSettings: IIntGenerationSettings, generatedRowCount: number,
-        percentOfNulls: number): Array<number> {
+        percentOfNulls: number): Array<number | null> {
 
         this.throwIfParamsAreNotValid(generationSettings, generatedRowCount, percentOfNulls);
 
@@ -41,7 +41,7 @@ export class DataGenerator implements IDataGenerator {
     }
     
     private generateValues<T>(generatedRowCount: number, percentOfNulls: number,
-        generateFunc: () => T): Array<T> {
+        generateFunc: () => T | null): Array<T | null> {
 
         if (percentOfNulls === 100) {
 
@@ -64,9 +64,9 @@ export class DataGenerator implements IDataGenerator {
 
     }
 
-    private addValuesToArray<T>(generatedRowCount: number, func: () => T): Array<T> {
+    private addValuesToArray<T>(generatedRowCount: number, func: () => T | null): Array<T | null> {
 
-        const array: Array<T> = [];
+        const array: Array<T | null> = [];
 
         for (let i = 0; i < generatedRowCount; i++) {
             array.push(func());

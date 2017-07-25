@@ -14,7 +14,7 @@ export class ConfigManager {
 
     getConfig(): IAppConfig {
 
-        if (this.appConfig === null) {
+        if (this.appConfig == null) {
             let appConfig = JSON.parse(fs.readFileSync(this.configPath, this.encoding)) as IAppConfig;
 
             appConfig = this.validateAndSetDefaultValues(appConfig);
@@ -25,7 +25,7 @@ export class ConfigManager {
         return this.appConfig;
     }
 
-    private appConfig: IAppConfig = null;
+    private appConfig: IAppConfig;
     private encoding = "Utf8";
     private readonly configPath: string;
 

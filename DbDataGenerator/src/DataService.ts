@@ -43,7 +43,7 @@ export class DataService {
 
             for (let filteredColMeta of filteredColumnsMetadata) {
 
-                let columnGlobalSettings: IColumnSettings = null;
+                let columnGlobalSettings: IColumnSettings | null = null;
 
                 if (tableSettings.columns != null) {
                     columnGlobalSettings = tableSettings.columns.filter(settings => {
@@ -54,7 +54,7 @@ export class DataService {
                 const percentOfNullsPerColumn =
                     this.getPercentOfNullValuePerColumn(tableSettings, columnGlobalSettings, filteredColMeta, dbSettings);
 
-                const columnRegularExpression = columnGlobalSettings == null ? null : (columnGlobalSettings.regularExpression == null ? null : columnGlobalSettings.regularExpression);
+                const columnRegularExpression = columnGlobalSettings == null ? "" : (columnGlobalSettings.regularExpression == null ? "" : columnGlobalSettings.regularExpression);
                 const colRandomValues = this.createColumnData(filteredColMeta, generatedRowCount, percentOfNullsPerColumn, columnRegularExpression);
 
                 for (let rowIndex = 0; rowIndex < generatedRowCount; rowIndex++) {
@@ -88,7 +88,7 @@ export class DataService {
         return result;
     }
 
-    private getPercentOfNullValuePerColumn(tableSettings: ITableSettings, columnGlobalSettings: IColumnSettings, dbColumnMeta: ColumnMetadata, dbSettings: IDbSettings): number {
+    private getPercentOfNullValuePerColumn(tableSettings: ITableSettings, columnGlobalSettings: IColumnSettings | null, dbColumnMeta: ColumnMetadata, dbSettings: IDbSettings): number {
 
         if (dbColumnMeta.isNulluble === false) {
             return 0;
@@ -105,7 +105,7 @@ export class DataService {
         return (dbSettings.percentOfNullsPerColumn == null) ? 0 : dbSettings.percentOfNullsPerColumn;
     }
 
-    private invokeDataGeneratorMethod(columnMeta: DbParameter, generatedRowCount: number, percentOfNullsPerColumn: number, columnRegularExpression: string): Object[] {
+    private invokeDataGeneratorMethod(columnMeta: DbParameter, generatedRowCount: number, percentOfNullsPerColumn: number, columnRegularExpression: string): Array<Object | null> {
 
         switch (columnMeta.dbType) {
             case DbType.Int:
