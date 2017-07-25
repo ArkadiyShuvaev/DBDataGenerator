@@ -1,13 +1,12 @@
 import {IAppConfig} from "../Abstractions/IAppConfig";
 import { IDbRepository } from "../Abstractions/IDbRepository";
-import { ColumnsMetadata as ColumnInformations } from "../ColumnInformation/ColumnsMetadata";
 import { Connection, Request, ColumnValue } from "tedious";
 import { ILogger } from "../Logger/ILogger";
-import { Promise, Thenable } from "es6-promise";
 import { DbParameter } from "../ColumnInformation/DbParameter";
-import {ColumnMetadata as ColumnInformation} from "../ColumnInformation/ColumnMetadata";
+import {ColumnMetadata} from "../ColumnInformation/ColumnMetadata";
 import {DbType} from "../ColumnInformation/DbType";
 import {TediousDbTypeConvertor as DbTypeTediousConvertor} from "./TediousDbTypeConvertor";
+import {ColumnsMetadata} from "../ColumnInformation/ColumnsMetadata";
 
 export class MsSqlDatabaseRepository implements IDbRepository {
 
@@ -16,9 +15,9 @@ export class MsSqlDatabaseRepository implements IDbRepository {
         this.config = config;
     }
 
-    saveColumns(rows: Array<Array<DbParameter>>, dbName: string, tableName: string): Thenable<number> {
+    saveColumns(rows: Array<Array<DbParameter>>, dbName: string, tableName: string): Promise<number> {
 
-        return new Promise((resolve: (value?: number) => void, reject: (value?: Error) => void) => {
+        return new Promise((resolve: (value?: number | PromiseLike<number>) => void, reject: (value?: Error) => void) => {
 
             const connection = this.createConnection(dbName);
 
@@ -54,17 +53,18 @@ export class MsSqlDatabaseRepository implements IDbRepository {
         });
     }
 
-    getColumnMetadata(dbName: string): Thenable<ColumnInformations> {
+    getColumnMetadata(dbName: string): Promise<ColumnsMetadata> {
 
         return new Promise((resolve, reject) => {
             this.getTableMetadataImpl(dbName, resolve, reject);
         });
     }
     
-    getTableMetadataImpl(dbName: string,
-        resolve: (value?: Object | PromiseLike<ColumnInformations>) => void, reject: (reason?: Error) => void): any {
+    private getTableMetadataImpl(dbName: string,
+        resolve: (value?: Object | PromiseLike<ColumnsMetadata>) => void, reject: (reason?: Error) => void): void {
+        
 
-        const columnInfos = new ColumnInformations();
+        const columnInfos = new ColumnsMetadata();
         const connection = this.createConnection(dbName);
         
         const request =
@@ -155,9 +155,9 @@ export namespace MsSqlDatabaseRepository {
             this.columns = columns;
         }
 
-        createColumnInformation(): ColumnInformation {
+        createColumnInformation(): ColumnMetadata {
 
-            const colInfo = new ColumnInformation();
+            const colInfo = new ColumnMetadata();
 
             let colValue = this.columns.filter(col => col.metadata.colName === "DATA_TYPE")[0];
 

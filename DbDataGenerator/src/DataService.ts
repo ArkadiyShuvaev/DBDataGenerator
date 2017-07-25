@@ -26,57 +26,47 @@ export class DataService {
         }
     }
 
-    populateDb(dbSettings: IDbSettings): void {
+    async populateDb(dbSettings: IDbSettings): Promise<void> {
         
-        const tableColumns = this.repository.getColumnMetadata(dbSettings.name);
-        tableColumns.then(columnsMetadata => {
-            
-            for (let tableSettings of dbSettings.tables) {
+        const tableColumns = await this.repository.getColumnMetadata(dbSettings.name);
 
-                const rows: Array<Array<DbParameter>> = [];
-                const generatedRowCount = tableSettings.generatedRowCount || dbSettings.generatedRowCount;
-                const filteredColumnsMetadata = columnsMetadata.informations.filter(ci => ci.tableName === tableSettings.name);
-                
-                for (let rowIndex = 0; rowIndex < generatedRowCount; rowIndex++) {
-                    rows[rowIndex] = [];
-                }
+        for (let tableSettings of dbSettings.tables) {
 
+            const rows: Array<Array<DbParameter>> = [];
+            const generatedRowCount = tableSettings.generatedRowCount || dbSettings.generatedRowCount;
+            const filteredColumnsMetadata = tableColumns.informations.filter(ci => ci.tableName === tableSettings.name);
 
-                for (let filteredColMeta of filteredColumnsMetadata) {
-
-                    let columnGlobalSettings: IColumnSettings = null;
-
-                    if (tableSettings.columns != null) {
-                        columnGlobalSettings = tableSettings.columns.filter(settings => {
-                            return settings.name.toLowerCase() === filteredColMeta.parameterName.toLowerCase();
-                        })[0];
-                    }
-
-                    const percentOfNullsPerColumn =
-                        this.getPercentOfNullValuePerColumn(tableSettings, columnGlobalSettings, filteredColMeta, dbSettings);
-
-                    const columnRegularExpression = columnGlobalSettings == null ? null : (columnGlobalSettings.regularExpression == null ? null : columnGlobalSettings.regularExpression);
-                    const colRandomValues = this.createColumnData(filteredColMeta, generatedRowCount, percentOfNullsPerColumn, columnRegularExpression);
-                    
-                    for (let rowIndex = 0; rowIndex < generatedRowCount; rowIndex++) {
-                        const row = rows[rowIndex];
-                        const value = colRandomValues[rowIndex];
-                        row.push(value);
-                    }
-                }
-                
-                this.repository.saveColumns(rows, dbSettings.name, tableSettings.name).then(result => {
-                    var r = result;
-                });
-
+            for (let rowIndex = 0; rowIndex < generatedRowCount; rowIndex++) {
+                rows[rowIndex] = [];
             }
 
-        }).then(null, error => {
-            this.logger.error(error);
-            throw new Error(error);
-        });
 
-        
+            for (let filteredColMeta of filteredColumnsMetadata) {
+
+                let columnGlobalSettings: IColumnSettings = null;
+
+                if (tableSettings.columns != null) {
+                    columnGlobalSettings = tableSettings.columns.filter(settings => {
+                        return settings.name.toLowerCase() === filteredColMeta.parameterName.toLowerCase();
+                    })[0];
+                }
+
+                const percentOfNullsPerColumn =
+                    this.getPercentOfNullValuePerColumn(tableSettings, columnGlobalSettings, filteredColMeta, dbSettings);
+
+                const columnRegularExpression = columnGlobalSettings == null ? null : (columnGlobalSettings.regularExpression == null ? null : columnGlobalSettings.regularExpression);
+                const colRandomValues = this.createColumnData(filteredColMeta, generatedRowCount, percentOfNullsPerColumn, columnRegularExpression);
+
+                for (let rowIndex = 0; rowIndex < generatedRowCount; rowIndex++) {
+                    const row = rows[rowIndex];
+                    const value = colRandomValues[rowIndex];
+                    row.push(value);
+                }
+            }
+
+            const result = await this.repository.saveColumns(rows, dbSettings.name, tableSettings.name);
+
+        }
     }
 
     private createColumnData(columnMeta: ColumnMetadata, generatedRowCount: number, percentOfNullsPerColumn: number, columnRegularExpression: string): DbParameter[] {
