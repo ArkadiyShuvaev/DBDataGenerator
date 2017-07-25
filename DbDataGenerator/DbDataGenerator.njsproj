@@ -65,6 +65,7 @@
     <TypeScriptCompile Include="src\ConfigManager.ts" />
     <TypeScriptCompile Include="src\Dal\TediousDbTypeConvertor.ts" />
     <TypeScriptCompile Include="src\DataServices\DataService.ts" />
+    <TypeScriptCompile Include="src\DataServices\DataGeneratorInvoker.ts" />
     <TypeScriptCompile Include="src\Logger\ILogger.ts" />
     <TypeScriptCompile Include="src\Logger\Logger.ts" />
     <TypeScriptCompile Include="src\Dal\MsSqlDatabaseRepository.ts" />

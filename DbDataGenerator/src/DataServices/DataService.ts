@@ -4,20 +4,21 @@ import {IAppConfig, IDbSettings, ITableSettings, IColumnSettings } from "../Abst
 import {ILogger} from "../Logger/ILogger";
 import {DbParameter} from "../ColumnInformation/DbParameter";
 import {ColumnMetadata} from "../ColumnInformation/ColumnMetadata";
-import {DbType} from "../ColumnInformation/DbType";
-import {IntGenerationSettings, CharacterGenerationSettings } from "../Abstractions/IGenerationSettings";
+import {DataGeneratorInvoker} from "./DataGeneratorInvoker";
 
 export class DataService {
     private readonly logger: ILogger;
     private readonly config: IAppConfig;
     private readonly generator: IDataGenerator;
     private readonly repository: IDbRepository;
+    private readonly dataGeneratorInvoker: DataGeneratorInvoker;
 
     constructor(repository: IDbRepository, generator: IDataGenerator, config: IAppConfig, logger: ILogger) {
         this.logger = logger;
         this.config = config;
         this.generator = generator;
         this.repository = repository;
+        this.dataGeneratorInvoker = new DataGeneratorInvoker(this.generator);
     }
 
     populate(): any {
@@ -72,7 +73,7 @@ export class DataService {
     private createColumnData(columnMeta: ColumnMetadata, generatedRowCount: number, percentOfNullsPerColumn: number, columnRegularExpression: string): DbParameter[] {
         
         const result: Array<DbParameter> = [];
-        const randomValues = this.invokeDataGeneratorMethod(columnMeta, generatedRowCount, percentOfNullsPerColumn, columnRegularExpression);
+        const randomValues = this.dataGeneratorInvoker.invokeDataGenerator(columnMeta, generatedRowCount, percentOfNullsPerColumn, columnRegularExpression);
         
         for (let i = 0; i < generatedRowCount; i++) {
 
@@ -105,39 +106,4 @@ export class DataService {
         return (dbSettings.percentOfNullsPerColumn == null) ? 0 : dbSettings.percentOfNullsPerColumn;
     }
 
-    private invokeDataGeneratorMethod(columnMeta: DbParameter, generatedRowCount: number, percentOfNullsPerColumn: number, columnRegularExpression: string): Array<Object | null> {
-
-        switch (columnMeta.dbType) {
-            case DbType.Int:
-                const intSettings = new IntGenerationSettings(columnMeta.isNulluble);
-                return this.generator.generateRandomIntValues(intSettings, generatedRowCount, percentOfNullsPerColumn);
-
-            case DbType.SmallInt:
-                const int16Settings = new IntGenerationSettings(columnMeta.isNulluble);
-                int16Settings.minimalValue = -32768;
-                int16Settings.maximumValue = 32767;
-                return this.generator.generateRandomIntValues(int16Settings, generatedRowCount, percentOfNullsPerColumn);
-
-            case DbType.TinyInt:
-                const int8Settings = new IntGenerationSettings(columnMeta.isNulluble);
-                int8Settings.minimalValue = 0;
-                int8Settings.maximumValue = 255;
-                return this.generator.generateRandomIntValues(int8Settings, generatedRowCount, percentOfNullsPerColumn);
-
-
-            case DbType.Char:
-            case DbType.NChar:
-            case DbType.VarChar:
-            case DbType.NVarChar:
-                const charSettings = new CharacterGenerationSettings(columnMeta.isNulluble, columnMeta.size);
-                charSettings.regularExpression = columnRegularExpression;
-                return this.generator.generateRandomCharacterValues(charSettings, generatedRowCount, percentOfNullsPerColumn);
-
-            default:
-                throw new TypeError(
-                    `The '${columnMeta.dbType.toString()}' dbType of the '${columnMeta.parameterName
-                    }' column is not supported.`);
-
-        }
-    }
 }
