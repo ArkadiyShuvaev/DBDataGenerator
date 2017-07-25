@@ -13,6 +13,8 @@ export interface IColumnSettings {
     regularExpression: string;
     allowNulls: boolean;
     percentOfNullsPerColumn: number;
+    minimumNumber: number;
+    maximumNumber: number;
 }
 
 export interface ITableSettings {

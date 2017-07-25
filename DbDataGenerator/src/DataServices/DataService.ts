@@ -50,13 +50,14 @@ export class DataService {
                     columnGlobalSettings = tableSettings.columns.filter(settings => {
                         return settings.name.toLowerCase() === filteredColMeta.parameterName.toLowerCase();
                     })[0];
+
+                    columnGlobalSettings = columnGlobalSettings || null;
                 }
 
                 const percentOfNullsPerColumn =
                     this.getPercentOfNullValuePerColumn(tableSettings, columnGlobalSettings, filteredColMeta, dbSettings);
-
-                const columnRegularExpression = columnGlobalSettings == null ? "" : (columnGlobalSettings.regularExpression == null ? "" : columnGlobalSettings.regularExpression);
-                const colRandomValues = this.createColumnData(filteredColMeta, generatedRowCount, percentOfNullsPerColumn, columnRegularExpression);
+                
+                const colRandomValues = this.createColumnData(filteredColMeta, generatedRowCount, percentOfNullsPerColumn, columnGlobalSettings);
 
                 for (let rowIndex = 0; rowIndex < generatedRowCount; rowIndex++) {
                     const row = rows[rowIndex];
@@ -70,10 +71,11 @@ export class DataService {
         }
     }
 
-    private createColumnData(columnMeta: ColumnMetadata, generatedRowCount: number, percentOfNullsPerColumn: number, columnRegularExpression: string): DbParameter[] {
+    private createColumnData(columnMeta: ColumnMetadata, generatedRowCount: number, percentOfNullsPerColumn: number, columnGlobalSettings: IColumnSettings | null): DbParameter[] {
         
         const result: Array<DbParameter> = [];
-        const randomValues = this.dataGeneratorInvoker.invokeDataGenerator(columnMeta, generatedRowCount, percentOfNullsPerColumn, columnRegularExpression);
+        
+        const randomValues = this.dataGeneratorInvoker.invokeDataGenerator(columnMeta, generatedRowCount, percentOfNullsPerColumn, columnGlobalSettings);
         
         for (let i = 0; i < generatedRowCount; i++) {
 
