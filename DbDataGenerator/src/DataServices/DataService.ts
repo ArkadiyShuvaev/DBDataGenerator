@@ -1,6 +1,6 @@
 import {IDbRepository} from "../Abstractions/IDbRepository";
 import {IDataGenerator} from "../Abstractions/IDataGenerator";
-import {IAppConfig, IDbSettings, ITableSettings, IColumnSettings } from "../Abstractions/IAppConfig";
+import { IAppConfig, IDbConfigSettings, ITableConfigSettings, IColumnConfigSettings } from "../Abstractions/IAppConfig";
 import {ILogger} from "../Logger/ILogger";
 import {DbParameter} from "../ColumnInformation/DbParameter";
 import {ColumnMetadata} from "../ColumnInformation/ColumnMetadata";
@@ -27,7 +27,7 @@ export class DataService {
         }
     }
 
-    async populateDb(dbSettings: IDbSettings): Promise<void> {
+    async populateDb(dbSettings: IDbConfigSettings): Promise<void> {
         
         const tableColumns = await this.repository.getColumnMetadata(dbSettings.name);
 
@@ -44,7 +44,7 @@ export class DataService {
 
             for (let filteredColMeta of filteredColumnsMetadata) {
 
-                let columnGlobalSettings: IColumnSettings | null = null;
+                let columnGlobalSettings: IColumnConfigSettings | null = null;
 
                 if (tableSettings.columns != null) {
                     columnGlobalSettings = tableSettings.columns.filter(settings => {
@@ -71,7 +71,7 @@ export class DataService {
         }
     }
 
-    private createColumnData(columnMeta: ColumnMetadata, generatedRowCount: number, percentOfNullsPerColumn: number, columnGlobalSettings: IColumnSettings | null): DbParameter[] {
+    private createColumnData(columnMeta: ColumnMetadata, generatedRowCount: number, percentOfNullsPerColumn: number, columnGlobalSettings: IColumnConfigSettings | null): DbParameter[] {
         
         const result: Array<DbParameter> = [];
         
@@ -91,7 +91,7 @@ export class DataService {
         return result;
     }
 
-    private getPercentOfNullValuePerColumn(tableSettings: ITableSettings, columnGlobalSettings: IColumnSettings | null, dbColumnMeta: ColumnMetadata, dbSettings: IDbSettings): number {
+    private getPercentOfNullValuePerColumn(tableSettings: ITableConfigSettings, columnGlobalSettings: IColumnConfigSettings | null, dbColumnMeta: ColumnMetadata, dbSettings: IDbConfigSettings): number {
 
         if (dbColumnMeta.isNulluble === false) {
             return 0;

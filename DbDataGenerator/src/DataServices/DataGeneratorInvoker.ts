@@ -3,7 +3,7 @@ import {DbType} from "../ColumnInformation/DbType";
 import {IntGenerationSettings, CharacterGenerationSettings } from "../Abstractions/IGenerationSettings";
 
 import {IDataGenerator} from "../Abstractions/IDataGenerator";
-import {IColumnSettings} from "../Abstractions/IAppConfig";
+import {IColumnConfigSettings} from "../Abstractions/IAppConfig";
 
 export class DataGeneratorInvoker {
     private readonly generator;
@@ -16,7 +16,7 @@ export class DataGeneratorInvoker {
     invokeDataGenerator(columnMeta: DbParameter,
                         generatedRowCount: number,
                         percentOfNullsPerColumn: number,
-                        columnGlobalSettings: IColumnSettings | null): Array<Object | null> {
+                        columnGlobalSettings: IColumnConfigSettings | null): Array<Object | null> {
 
         switch (columnMeta.dbType) {
             case DbType.Int:
@@ -62,12 +62,12 @@ export class DataGeneratorInvoker {
 
     }
 
-    private getMinimumIntValue(defaultValue: number, columnGlobalSettings: IColumnSettings | null): number {
+    private getMinimumIntValue(defaultValue: number, columnGlobalSettings: IColumnConfigSettings | null): number {
         return columnGlobalSettings === null
             ? defaultValue : (columnGlobalSettings.minimumNumber == null ? defaultValue : columnGlobalSettings.minimumNumber);
     }
 
-    private getMaximumIntValue(defaultValue: number, columnGlobalSettings: IColumnSettings | null): number {
+    private getMaximumIntValue(defaultValue: number, columnGlobalSettings: IColumnConfigSettings | null): number {
         return columnGlobalSettings === null
             ? defaultValue : (columnGlobalSettings.maximumNumber == null ? defaultValue : columnGlobalSettings.maximumNumber);
     }

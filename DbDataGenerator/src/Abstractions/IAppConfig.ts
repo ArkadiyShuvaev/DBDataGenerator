@@ -4,10 +4,10 @@ export interface IAppConfig {
         password: string;
         server: string;
     };
-    databases: Array<IDbSettings>;
+    databases: Array<IDbConfigSettings>;
 }
 
-export interface IColumnSettings {
+export interface IColumnConfigSettings {
     name: string;
     dataType: string;
     regularExpression: string;
@@ -17,16 +17,16 @@ export interface IColumnSettings {
     maximumNumber: number;
 }
 
-export interface ITableSettings {
+export interface ITableConfigSettings {
     name: string;
-    columns: Array<IColumnSettings>;
+    columns: Array<IColumnConfigSettings>;
     generatedRowCount: number;
     percentOfNullsPerColumn: number;
 }
 
-export interface IDbSettings {
+export interface IDbConfigSettings {
     name: string;
-    tables: Array<ITableSettings>;
+    tables: Array<ITableConfigSettings>;
     percentOfNullsPerColumn: number;
     generatedRowCount: number;
 }
