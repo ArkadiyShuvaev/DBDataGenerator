@@ -1,7 +1,7 @@
 ﻿import {ConfigManager} from "./ConfigManager";
-import { DataService } from "./DataService";
+import { DataService } from "./DataServices/DataService";
 import {MsSqlDatabaseRepository as DatabaseRepository} from "./Dal/MsSqlDatabaseRepository";
-import {DataGenerator} from "./DataGenerator";
+import { DataGenerator } from "./DataServices/DataGenerator";
 import { IDataGenerator } from "./Abstractions/IDataGenerator";
 import {Logger} from "./Logger/Logger";
 const configPath = "../app.config.json";

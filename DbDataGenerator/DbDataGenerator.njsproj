@@ -64,13 +64,13 @@
     <TypeScriptCompile Include="src\ColumnInformation\DbParameter.ts" />
     <TypeScriptCompile Include="src\ConfigManager.ts" />
     <TypeScriptCompile Include="src\Dal\TediousDbTypeConvertor.ts" />
-    <TypeScriptCompile Include="src\DataService.ts" />
+    <TypeScriptCompile Include="src\DataServices\DataService.ts" />
     <TypeScriptCompile Include="src\Logger\ILogger.ts" />
     <TypeScriptCompile Include="src\Logger\Logger.ts" />
     <TypeScriptCompile Include="src\Dal\MsSqlDatabaseRepository.ts" />
     <TypeScriptCompile Include="src\Abstractions\IAppConfig.ts" />
     <TypeScriptCompile Include="src\Abstractions\IDbRepository.ts" />
-    <TypeScriptCompile Include="src\DataGenerator.ts" />
+    <TypeScriptCompile Include="src\DataServices\DataGenerator.ts" />
     <TypeScriptCompile Include="src\Abstractions\IDataGenerator.ts" />
     <TypeScriptCompile Include="typings\globals\node\index.d.ts" />
     <TypeScriptCompile Include="typings\index.d.ts" />
@@ -83,6 +83,7 @@
     <Folder Include="src\ColumnInformation\" />
     <Folder Include="src\Dal\" />
     <Folder Include="src\GenerationSettings\" />
+    <Folder Include="src\DataServices\" />
     <Folder Include="typings\" />
     <Folder Include="typings\globals\" />
     <Folder Include="typings\globals\node\" />

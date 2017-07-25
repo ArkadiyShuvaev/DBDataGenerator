@@ -1,5 +1,5 @@
-import { IDataGenerator } from "./Abstractions/IDataGenerator";
-import { IIntGenerationSettings, ICharacterGenerationSettings, IBaseGenerationSettings } from "./Abstractions/IGenerationSettings";
+import { IDataGenerator } from "../Abstractions/IDataGenerator";
+import { IIntGenerationSettings, ICharacterGenerationSettings, IBaseGenerationSettings } from "../Abstractions/IGenerationSettings";
 //import {RandExp} from "randexp";
 const RandExp: any = require("randexp");
 

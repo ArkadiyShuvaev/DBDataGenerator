@@ -1,11 +1,11 @@
-import {IDbRepository} from "./Abstractions/IDbRepository";
-import {IDataGenerator} from "./Abstractions/IDataGenerator";
-import {IAppConfig, IDbSettings, ITableSettings, IColumnSettings } from "./Abstractions/IAppConfig";
-import {ILogger} from "./Logger/ILogger";
-import {DbParameter} from "./ColumnInformation/DbParameter";
-import {ColumnMetadata} from "./ColumnInformation/ColumnMetadata";
-import {DbType} from "./ColumnInformation/DbType";
-import {IntGenerationSettings, CharacterGenerationSettings } from "./Abstractions/IGenerationSettings";
+import {IDbRepository} from "../Abstractions/IDbRepository";
+import {IDataGenerator} from "../Abstractions/IDataGenerator";
+import {IAppConfig, IDbSettings, ITableSettings, IColumnSettings } from "../Abstractions/IAppConfig";
+import {ILogger} from "../Logger/ILogger";
+import {DbParameter} from "../ColumnInformation/DbParameter";
+import {ColumnMetadata} from "../ColumnInformation/ColumnMetadata";
+import {DbType} from "../ColumnInformation/DbType";
+import {IntGenerationSettings, CharacterGenerationSettings } from "../Abstractions/IGenerationSettings";
 
 export class DataService {
     private readonly logger: ILogger;
