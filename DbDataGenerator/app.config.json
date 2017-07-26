@@ -7,7 +7,7 @@
   "databases": [
     {
       "name": "DataGeneratorApp",
-      "tables": [
+      "includedTables": [
         {
           "name": "Table_4",
           "generatedRowCount": 10,

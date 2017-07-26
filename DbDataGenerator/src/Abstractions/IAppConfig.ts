@@ -26,7 +26,7 @@ export interface ITableConfigSettings {
 
 export interface IDbConfigSettings {
     name: string;
-    tables: Array<ITableConfigSettings>;
+    includedTables: Array<ITableConfigSettings>;
     percentOfNullsPerColumn: number;
     generatedRowCount: number;
 }

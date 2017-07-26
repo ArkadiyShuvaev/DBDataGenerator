@@ -31,7 +31,7 @@ export class DataService {
         
         const tablesColumns = await this.repository.getColumnMetadata(dbSettings.name);
 
-        for (let tableSettings of dbSettings.tables) {
+        for (let tableSettings of dbSettings.includedTables) {
 
             const rows: Array<Array<DbParameter>> = [];
             const generatedRowCount = tableSettings.generatedRowCount || dbSettings.generatedRowCount;

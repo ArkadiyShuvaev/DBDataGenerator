@@ -48,8 +48,8 @@ export class ConfigManager {
                 dbSettings.generatedRowCount = this.generatedRowCountDefaultValue;
             }
 
-            if (dbSettings.tables == null) {
-                dbSettings.tables = [];
+            if (dbSettings.includedTables == null) {
+                dbSettings.includedTables = [];
             }
         });
         
@@ -57,7 +57,7 @@ export class ConfigManager {
 
         //appConfig.databases.forEach(dbSettings => {
 
-        //    dbSettings.tables.forEach(tableSettings => {
+        //    dbSettings.includedTables.forEach(tableSettings => {
 
         //        if (tableSettings.percentOfNullsPerColumn == null) {
         //            this.PercentOfNullsPerColumnDefaultValue = 50;
