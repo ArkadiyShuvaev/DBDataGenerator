@@ -68,21 +68,27 @@ export class MsSqlDatabaseRepository implements IDbRepository {
         const connection = this.createConnection(dbName);
         
         const request =
-            new Request(`SELECT col.COLUMN_NAME, col.TABLE_NAME, col.TABLE_SCHEMA, 
-                                col.COLUMN_DEFAULT, col.IS_NULLABLE, col.DATA_TYPE, 
-                                col.CHARACTER_MAXIMUM_LENGTH, col.CHARACTER_OCTET_LENGTH, 
-                                cu.CONSTRAINT_NAME, tc.CONSTRAINT_TYPE
-                         FROM INFORMATION_SCHEMA.COLUMNS  as col
-                         left join INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE as cu on col.COLUMN_NAME = cu.COLUMN_NAME
-                         left join INFORMATION_SCHEMA.TABLE_CONSTRAINTS as tc on cu.CONSTRAINT_NAME = tc.CONSTRAINT_NAME
-                         where col.TABLE_NAME in 
+            new Request(`select o.name as TABLE_NAME
+	                            , c.collation_name as COLLATION_NAME
+	                            , c.is_identity as IS_IDENTITY
+	                            , c.name as COLUMN_NAME
+	                            , ic.DATA_TYPE
+	                            , ic.TABLE_SCHEMA
+	                            , ic.IS_NULLABLE
+	                            , ic.CHARACTER_MAXIMUM_LENGTH
+	                            , ic.CHARACTER_SET_NAME
+	
+                            from sys.objects o
+                            inner join sys.columns c on o.object_id = c.object_id
+                            inner join INFORMATION_SCHEMA.COLUMNS as ic on ic.TABLE_NAME = o.name and ic.COLUMN_NAME = c.name
+                            where o.name in 
                             (
-                                SELECT T.name as TableName FROM sys.tables AS T
-                                INNER JOIN sys.schemas AS S ON S.schema_id = T.schema_id
-                                LEFT JOIN sys.extended_properties AS EP ON EP.major_id = T.[object_id]
-                                WHERE (EP.class_desc IS NULL 
-                                    OR (EP.class_desc <> 'OBJECT_OR_COLUMN'
-                                    AND EP.[name] <> 'microsoft_database_tools_support'))  
+	                                SELECT T.name as TableName FROM sys.tables AS T
+                                    INNER JOIN sys.schemas AS S ON S.schema_id = T.schema_id
+                                    LEFT JOIN sys.extended_properties AS EP ON EP.major_id = T.[object_id]
+                                    WHERE (EP.class_desc IS NULL 
+                                        OR (EP.class_desc <> 'OBJECT_OR_COLUMN'
+                                        AND EP.[name] <> 'microsoft_database_tools_support'))    
                             )`, 
 
                 (error: Error) => {
@@ -178,14 +184,14 @@ export namespace MsSqlDatabaseRepository {
             colValue = this.columns.filter(col => col.metadata.colName === "TABLE_NAME")[0];
             colInfo.tableName = colValue.value;
 
-            colValue = this.columns.filter(col => col.metadata.colName === "COLUMN_DEFAULT")[0];
-            colInfo.defaultValue = colValue.value;
+            colValue = this.columns.filter(col => col.metadata.colName === "COLLATION_NAME")[0];
+            colInfo.collationName = colValue.value;
             
-            colValue = this.columns.filter(col => col.metadata.colName === "COLUMN_DEFAULT")[0];
-            colInfo.defaultValue = colValue.value;
+            colValue = this.columns.filter(col => col.metadata.colName === "CHARACTER_SET_NAME")[0];
+            colInfo.characterSetName = colValue.value;
 
-            colValue = this.columns.filter(col => col.metadata.colName === "CONSTRAINT_TYPE")[0];
-            colInfo.isKey = !(colValue.value == null);
+            colValue = this.columns.filter(col => col.metadata.colName === "IS_IDENTITY")[0];
+            colInfo.isIdentity = colValue.value;
 
             return colInfo;
         }
