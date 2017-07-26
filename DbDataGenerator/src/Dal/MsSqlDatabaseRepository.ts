@@ -184,7 +184,6 @@ export class MsSqlDatabaseRepository implements IDbRepository {
                                             where o.name in 
                                             (
 	                                                SELECT T.name as TableName FROM sys.tables AS T
-                                                    INNER JOIN sys.schemas AS S ON S.schema_id = T.schema_id
                                                     LEFT JOIN sys.extended_properties AS EP ON EP.major_id = T.[object_id]
                                                     WHERE (EP.class_desc IS NULL 
                                                         OR (EP.class_desc <> 'OBJECT_OR_COLUMN'
@@ -201,15 +200,21 @@ export class MsSqlDatabaseRepository implements IDbRepository {
                                                 REFERENCE_COL_NAME='' 
 
                                         FROM sys.key_constraints as PKnUKEY
-                                            INNER JOIN sys.tables as PKnUTable
-                                                    ON PKnUTable.object_id = PKnUKEY.parent_object_id
-                                            INNER JOIN sys.index_columns as PKnUColIdx
+                                            INNER JOIN (
+				                                        SELECT T.object_id, T.name from sys.tables AS T
+				                                        left join sys.extended_properties AS EP ON EP.major_id = T.[object_id]
+				                                        WHERE (EP.class_desc IS NULL 
+					                                        OR (EP.class_desc <> 'OBJECT_OR_COLUMN'
+					                                        AND EP.[name] <> 'microsoft_database_tools_support'))  
+			                                        ) as PKnUTable
+				                                        ON PKnUTable.object_id = PKnUKEY.parent_object_id
+	                                        INNER JOIN sys.index_columns as PKnUColIdx
                                                     ON PKnUColIdx.object_id = PKnUTable.object_id
                                                     AND PKnUColIdx.index_id = PKnUKEY.unique_index_id
                                             INNER JOIN sys.columns as PKnUKEYCol
                                                     ON PKnUKEYCol.object_id = PKnUTable.object_id
                                                     AND PKnUKEYCol.column_id = PKnUColIdx.column_id
-                                                INNER JOIN INFORMATION_SCHEMA.COLUMNS oParentColDtl
+                                             INNER JOIN INFORMATION_SCHEMA.COLUMNS oParentColDtl
                                                     ON oParentColDtl.TABLE_NAME=PKnUTable.name
                                                     AND oParentColDtl.COLUMN_NAME=PKnUKEYCol.name
                                         UNION ALL
@@ -236,7 +241,7 @@ export class MsSqlDatabaseRepository implements IDbRepository {
                                             INNER JOIN sys.all_columns oReferenceCol
                                                     ON FKC.referenced_object_id=oReferenceCol.object_id /* ID of the object to which this column belongs.*/
                                                     AND FKC.referenced_column_id=oReferenceCol.column_id/* ID of the column. Is unique within the object.Column IDs might not be sequential.*/
-                            `;
+                                        `;
 }
 
 export namespace MsSqlDatabaseRepository {
