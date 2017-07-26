@@ -59,9 +59,10 @@
     <Content Include="README.md" />
     <TypeScriptCompile Include="src\ColumnInformation\ColumnMetadata.ts" />
     <TypeScriptCompile Include="src\ColumnInformation\DbType.ts" />
-    <TypeScriptCompile Include="src\ColumnInformation\ColumnsMetadata.ts" />
+    <TypeScriptCompile Include="src\ColumnInformation\DatabaseMetadata.ts" />
     <TypeScriptCompile Include="src\ColumnInformation\ConstraintType.ts" />
     <TypeScriptCompile Include="src\ColumnInformation\DbParameter.ts" />
+    <TypeScriptCompile Include="src\ColumnInformation\Ralationship.ts" />
     <TypeScriptCompile Include="src\ConfigManager.ts" />
     <TypeScriptCompile Include="src\Dal\TediousDbTypeConvertor.ts" />
     <TypeScriptCompile Include="src\DataServices\DataService.ts" />

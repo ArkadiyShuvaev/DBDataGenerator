@@ -29,13 +29,13 @@ export class DataService {
 
     async populateDb(dbSettings: IDbConfigSettings): Promise<void> {
         
-        const tablesColumns = await this.repository.getColumnMetadata(dbSettings.name);
-
+        const databaseMetadata = await this.repository.getDatabaseMetadata(dbSettings.name);
+        
         for (let tableSettings of dbSettings.includedTables) {
 
             const rows: Array<Array<DbParameter>> = [];
             const generatedRowCount = tableSettings.generatedRowCount || dbSettings.generatedRowCount;
-            const filteredColumnsMetadata = tablesColumns.informations.filter(ci => ci.tableName === tableSettings.name);
+            const filteredColumnsMetadata = databaseMetadata.informations.filter(ci => ci.tableName === tableSettings.name);
 
             for (let rowIndex = 0; rowIndex < generatedRowCount; rowIndex++) {
                 rows[rowIndex] = [];

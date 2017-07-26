@@ -1,4 +1,5 @@
 export enum ConstraintType {
-    PrymaryKey,
-    ForeignKey
+    PRIMARY_KEY_CONSTRAINT,
+    UNIQUE_CONSTRAINT,
+    FK
 }
