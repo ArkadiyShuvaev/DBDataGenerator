@@ -54,6 +54,12 @@ export class DataService {
             const columnsMetadataByTableName = databaseMetadata.informations.filter(ci => ci.tableName === tableName);
             for (let filteredColMeta of columnsMetadataByTableName) {
 
+                if (filteredColMeta.isIdentity) {
+                    this.logger.debug(
+                        `The 'Identity' property of the '${filteredColMeta.parameterName}' column is True and this column will be skipped.`);
+                    continue;
+                }
+
                 let columnGlobalSettings: IColumnConfigSettings | null = null;
 
                 if (tableConfigSettings != null && tableConfigSettings.columns != null) {
@@ -67,7 +73,7 @@ export class DataService {
                 const percentOfNullsPerColumn =
                     this.getPercentOfNullValuePerColumn(tableConfigSettings, columnGlobalSettings, filteredColMeta, dbSettings);
                 
-                const colRandomValues = this.createColumnData(filteredColMeta, generatedRowCount, percentOfNullsPerColumn, columnGlobalSettings);
+                const colRandomValues = this.createRandomColumnData(filteredColMeta, generatedRowCount, percentOfNullsPerColumn, columnGlobalSettings);
 
                 for (let rowIndex = 0; rowIndex < generatedRowCount; rowIndex++) {
                     const row = rows[rowIndex];
@@ -81,7 +87,7 @@ export class DataService {
         }
     }
 
-    private createColumnData(columnMeta: ColumnMetadata, generatedRowCount: number, percentOfNullsPerColumn: number, columnGlobalSettings: IColumnConfigSettings | null): DbParameter[] {
+    private createRandomColumnData(columnMeta: ColumnMetadata, generatedRowCount: number, percentOfNullsPerColumn: number, columnGlobalSettings: IColumnConfigSettings | null): DbParameter[] {
         
         const result: Array<DbParameter> = [];
         

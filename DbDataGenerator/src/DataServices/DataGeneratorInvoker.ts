@@ -21,6 +21,8 @@ export class DataGeneratorInvoker {
         switch (columnMeta.dbType) {
             case DbType.Int:
                 const intSettings = new IntGenerationSettings(columnMeta.isNulluble);
+                intSettings.minimalValue = this.getMinimumIntValue(intSettings.minimalValue, columnGlobalSettings);
+                intSettings.maximumValue = this.getMaximumIntValue(intSettings.maximumValue, columnGlobalSettings);
                 return this.generator.generateRandomIntValues(intSettings, generatedRowCount, percentOfNullsPerColumn);
 
             case DbType.SmallInt:

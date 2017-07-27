@@ -17,7 +17,12 @@
             {
               "name": "Char",
               "regularExpression": "[A-F]{1,10}"
+            },
+            {
+              "name": "Int32",
+              "minimumNumber": 1
             }
+
           ]
         }
       ]
