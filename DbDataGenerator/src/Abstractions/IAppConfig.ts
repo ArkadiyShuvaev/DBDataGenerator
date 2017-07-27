@@ -18,7 +18,7 @@ export interface IColumnConfigSettings {
 }
 
 export interface ITableConfigSettings {
-    name: string;
+    tableName: string;
     columns: Array<IColumnConfigSettings>;
     generatedRowCount: number;
     percentOfNullsPerColumn: number;
@@ -26,7 +26,25 @@ export interface ITableConfigSettings {
 
 export interface IDbConfigSettings {
     name: string;
-    includedTables: Array<ITableConfigSettings>;
+    /**
+     * Table array list names that should be processed.
+     * If this list is empty all tables in the database will be iterated.
+     */
+    includedTableNames: Array<string>;
+
+    /**
+     * Excluded table array list names that should not be processed.
+     * If this list is empty all tables in the database will be iterated.
+     */
+    excludedTableNames: Array<string>;
+
+    /**
+     * Please define specific settings for the particular table.
+     * Please keep in mind this property clarify settings for the processed tables only.
+     * @see {@link excludedTableNames}
+     * @see {@link includedTableNames}
+     */
+    specificTableSettings: Array<ITableConfigSettings>;
     percentOfNullsPerColumn: number;
     generatedRowCount: number;
 }

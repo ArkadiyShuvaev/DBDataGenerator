@@ -7,19 +7,20 @@
   "databases": [
     {
       "name": "DataGeneratorApp",
-      "includedTables": [
+      "includedTableNames": [ "Table_4" ],
+      "specificTableSettings": [
         {
-          "name": "Table_4",
+          "tableName": "Table_4",
           "generatedRowCount": 10,
           "percentOfNullsPerColumn": 30,
           "columns": [
             {
               "name": "Char",
-              "regularExpression": "[A-F]{1,10}" 
+              "regularExpression": "[A-F]{1,10}"
             }
           ]
         }
-      ] 
+      ]
     }
   ]
 }

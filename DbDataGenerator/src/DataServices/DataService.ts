@@ -5,6 +5,7 @@ import {ILogger} from "../Logger/ILogger";
 import {DbParameter} from "../ColumnInformation/DbParameter";
 import {ColumnMetadata} from "../ColumnInformation/ColumnMetadata";
 import {DataGeneratorInvoker} from "./DataGeneratorInvoker";
+import {DatabaseMetadata} from "../ColumnInformation/DatabaseMetadata";
 
 export class DataService {
     private readonly logger: ILogger;
@@ -30,24 +31,33 @@ export class DataService {
     async populateDb(dbSettings: IDbConfigSettings): Promise<void> {
         
         const databaseMetadata = await this.repository.getDatabaseMetadata(dbSettings.name);
+        const tableNames = this.getTableNames(dbSettings, databaseMetadata);
         
-        for (let tableSettings of dbSettings.includedTables) {
+        for (let tableName of tableNames) {
 
             const rows: Array<Array<DbParameter>> = [];
-            const generatedRowCount = tableSettings.generatedRowCount || dbSettings.generatedRowCount;
-            const filteredColumnsMetadata = databaseMetadata.informations.filter(ci => ci.tableName === tableSettings.name);
+            
+            const filteredTableSettings = dbSettings.specificTableSettings.filter(
+                                                    settings => settings.tableName === tableName);
+            const tableConfigSettings = (filteredTableSettings == null || filteredTableSettings.length === 0)
+                ? null
+                : filteredTableSettings[0];
 
+            const generatedRowCount = (tableConfigSettings == null || tableConfigSettings.generatedRowCount == null)
+                    ? dbSettings.generatedRowCount
+                    : tableConfigSettings.generatedRowCount;
+            
             for (let rowIndex = 0; rowIndex < generatedRowCount; rowIndex++) {
                 rows[rowIndex] = [];
             }
 
-
-            for (let filteredColMeta of filteredColumnsMetadata) {
+            const columnsMetadataByTableName = databaseMetadata.informations.filter(ci => ci.tableName === tableName);
+            for (let filteredColMeta of columnsMetadataByTableName) {
 
                 let columnGlobalSettings: IColumnConfigSettings | null = null;
 
-                if (tableSettings.columns != null) {
-                    columnGlobalSettings = tableSettings.columns.filter(settings => {
+                if (tableConfigSettings != null && tableConfigSettings.columns != null) {
+                    columnGlobalSettings = tableConfigSettings.columns.filter(settings => {
                         return settings.name.toLowerCase() === filteredColMeta.parameterName.toLowerCase();
                     })[0];
 
@@ -55,7 +65,7 @@ export class DataService {
                 }
 
                 const percentOfNullsPerColumn =
-                    this.getPercentOfNullValuePerColumn(tableSettings, columnGlobalSettings, filteredColMeta, dbSettings);
+                    this.getPercentOfNullValuePerColumn(tableConfigSettings, columnGlobalSettings, filteredColMeta, dbSettings);
                 
                 const colRandomValues = this.createColumnData(filteredColMeta, generatedRowCount, percentOfNullsPerColumn, columnGlobalSettings);
 
@@ -66,7 +76,7 @@ export class DataService {
                 }
             }
 
-            const result = await this.repository.saveColumns(rows, dbSettings.name, tableSettings.name);
+            const result = await this.repository.saveColumns(rows, dbSettings.name, tableName);
 
         }
     }
@@ -92,7 +102,7 @@ export class DataService {
         return result;
     }
 
-    private getPercentOfNullValuePerColumn(tableSettings: ITableConfigSettings, columnGlobalSettings: IColumnConfigSettings | null, dbColumnMeta: ColumnMetadata, dbSettings: IDbConfigSettings): number {
+    private getPercentOfNullValuePerColumn(tableSettings: ITableConfigSettings | null, columnGlobalSettings: IColumnConfigSettings | null, dbColumnMeta: ColumnMetadata, dbSettings: IDbConfigSettings): number {
 
         if (dbColumnMeta.isNulluble === false) {
             return 0;
@@ -109,4 +119,26 @@ export class DataService {
         return (dbSettings.percentOfNullsPerColumn == null) ? 0 : dbSettings.percentOfNullsPerColumn;
     }
 
+    getTableNames(dbConfigSettings: IDbConfigSettings, databaseMetadata: DatabaseMetadata): Array<string> {
+        
+        if (dbConfigSettings.includedTableNames != null && dbConfigSettings.includedTableNames.length > 0) {
+            return dbConfigSettings.includedTableNames;
+        }
+
+        const tableLists = databaseMetadata.relationships.map(rel => rel.parentTableName);
+        const uniqTableNames = tableLists.filter((item, idx, tableLists) => {
+            return tableLists.indexOf(item) === idx;
+        });
+
+        const excludedTableNames = dbConfigSettings.excludedTableNames || [];
+
+        if (excludedTableNames.length > 0) {
+            return uniqTableNames.filter((item, idx, excludedTableNames) => {
+                return excludedTableNames.indexOf(item) === -1;
+            });
+        }
+
+        return uniqTableNames;
+    }
+    
 }

@@ -48,28 +48,20 @@ export class ConfigManager {
                 dbSettings.generatedRowCount = this.generatedRowCountDefaultValue;
             }
 
-            if (dbSettings.includedTables == null) {
-                dbSettings.includedTables = [];
+            if (dbSettings.includedTableNames == null) {
+                dbSettings.includedTableNames = [];
             }
+
+            if (dbSettings.excludedTableNames == null) {
+                dbSettings.excludedTableNames = [];
+            }
+
+            if (dbSettings.specificTableSettings == null) {
+                dbSettings.specificTableSettings = [];
+            }
+
         });
         
         return appConfig;
-
-        //appConfig.databases.forEach(dbSettings => {
-
-        //    dbSettings.includedTables.forEach(tableSettings => {
-
-        //        if (tableSettings.percentOfNullsPerColumn == null) {
-        //            this.PercentOfNullsPerColumnDefaultValue = 50;
-        //            tableSettings.percentOfNullsPerColumn = this.PercentOfNullsPerColumnDefaultValue;
-        //        }
-
-        //        shouldSettingsBeReturnWoFutherProcessing = true;
-        //    });
-
-
-        //});
-
-
     }
 }
