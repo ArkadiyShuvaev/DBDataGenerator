@@ -6,5 +6,7 @@ export class DbParameter {
     value: Object | null;
     isIdentity: boolean;
     isNulluble: boolean;
-    size: number;
+    characterMaximumLength: number;
+    numericPrecision: number;
+    numericScale: number;
 }

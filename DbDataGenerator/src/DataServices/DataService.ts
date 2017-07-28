@@ -71,7 +71,7 @@ export class DataService {
                 }
 
                 const percentOfNullsPerColumn =
-                    this.getPercentOfNullValuePerColumn(tableConfigSettings, columnGlobalSettings, filteredColMeta, dbSettings);
+                    this.getPercentOfNullValuesPerColumn(tableConfigSettings, columnGlobalSettings, filteredColMeta, dbSettings);
                 
                 const colRandomValues = this.createRandomColumnData(filteredColMeta, generatedRowCount, percentOfNullsPerColumn, columnGlobalSettings);
 
@@ -98,17 +98,19 @@ export class DataService {
             const dbParam = new DbParameter();
             dbParam.isNulluble = columnMeta.isNulluble;
             dbParam.parameterName = columnMeta.parameterName;
-            dbParam.size = columnMeta.size;
+            dbParam.characterMaximumLength = columnMeta.characterMaximumLength;
             dbParam.value = randomValues[i];
             dbParam.dbType = columnMeta.dbType;
             dbParam.isIdentity = columnMeta.isIdentity;
+            dbParam.numericPrecision = columnMeta.numericPrecision;
+            dbParam.numericScale = columnMeta.numericScale;
 
             result.push(dbParam);
         }
         return result;
     }
 
-    private getPercentOfNullValuePerColumn(tableSettings: ITableConfigSettings | null, columnGlobalSettings: IColumnConfigSettings | null, dbColumnMeta: ColumnMetadata, dbSettings: IDbConfigSettings): number {
+    private getPercentOfNullValuesPerColumn(tableSettings: ITableConfigSettings | null, columnGlobalSettings: IColumnConfigSettings | null, dbColumnMeta: ColumnMetadata, dbSettings: IDbConfigSettings): number {
 
         if (dbColumnMeta.isNulluble === false) {
             return 0;

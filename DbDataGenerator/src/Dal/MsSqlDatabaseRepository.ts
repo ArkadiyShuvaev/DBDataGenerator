@@ -1,6 +1,6 @@
 import {IAppConfig} from "../Abstractions/IAppConfig";
 import { IDbRepository } from "../Abstractions/IDbRepository";
-import { Connection, Request, ColumnValue } from "tedious";
+import { Connection, Request, ColumnValue, BulkLoadColumnOpts, BulkLoad } from "tedious";
 import { ILogger } from "../Logger/ILogger";
 import { DbParameter } from "../ColumnInformation/DbParameter";
 import {ColumnMetadata} from "../ColumnInformation/ColumnMetadata";
@@ -8,10 +8,12 @@ import {DbType} from "../ColumnInformation/DbType";
 import {TediousDbTypeConvertor as DbTypeTediousConvertor} from "./TediousDbTypeConvertor";
 import {DatabaseMetadata} from "../ColumnInformation/DatabaseMetadata";
 import {Ralationship} from "../ColumnInformation/Ralationship";
-import {ConstraintType} from "../ColumnInformation/ConstraintType";
+import { ConstraintType } from "../ColumnInformation/ConstraintType";
+import {TYPES} from "tedious";
 
 export class MsSqlDatabaseRepository implements IDbRepository {
-    
+
+    private maximumSupportedPrecisionForDecimalValue = 18;
 
     constructor(config: IAppConfig, logger: ILogger) {
         this.logger = logger;
@@ -35,16 +37,23 @@ export class MsSqlDatabaseRepository implements IDbRepository {
 
                 resolve(rowCount);
             });
-            
-            for (let column of rows[0]) {
-                bulkLoad.addColumn(column.parameterName, DbTypeTediousConvertor.convertToTediousSqlType(column.dbType), { length: column.size, nullable: column.isNulluble });
-            }
-            
+
+            this.addColumnToBulkLoad(bulkLoad, rows);
+
             for (let row of rows) {
 
                 const rowVal: any = {};
                 row.forEach(col => {
-                    rowVal[col.parameterName] = col.value;
+
+                    if (col.dbType === DbType.Decimal) {
+                        rowVal[col.parameterName] = col.value;
+                        const value = this.trancateDecimalValueIfNecessary(col.value);
+                        rowVal[col.parameterName] = value;
+                        
+                    } else {
+                        rowVal[col.parameterName] = col.value;
+                    }
+
                 });
 
                 bulkLoad.addRow(rowVal);
@@ -177,6 +186,8 @@ export class MsSqlDatabaseRepository implements IDbRepository {
 	                                            , ic.IS_NULLABLE
 	                                            , ic.CHARACTER_MAXIMUM_LENGTH
 	                                            , ic.CHARACTER_SET_NAME
+                                                , ic.NUMERIC_PRECISION
+                                                , ic.NUMERIC_SCALE
 	
                                             from sys.objects o
                                             inner join sys.columns c on o.object_id = c.object_id
@@ -242,6 +253,82 @@ export class MsSqlDatabaseRepository implements IDbRepository {
                                                     ON FKC.referenced_object_id=oReferenceCol.object_id /* ID of the object to which this column belongs.*/
                                                     AND FKC.referenced_column_id=oReferenceCol.column_id/* ID of the column. Is unique within the object.Column IDs might not be sequential.*/
                                         `;
+
+    /**
+     * Truncate value to a maximum supported precision.
+     * @param value Decimal value.
+     * @see {@link http://tediousjs.github.io/tedious/api-datatypes.html} for more details.
+     */
+    private trancateDecimalValueIfNecessary(value: Object | null): Object | null {
+        if (value == null) {
+            return value;
+        }
+        const valueAsStr = value.toString();
+
+        let precisionForDecimalValue = this.maximumSupportedPrecisionForDecimalValue; 
+        if (valueAsStr.startsWith("-")) {
+            precisionForDecimalValue++;
+        }
+
+        if (valueAsStr.length < precisionForDecimalValue + 1) { // +1 for point delimeter
+            return value;
+        }
+
+        const arr = valueAsStr.split(".");
+        const significand = arr[0];
+
+        const result = `${significand.substring(0, precisionForDecimalValue - 1)}.${arr[1]}`;
+
+        this.logger.debug(`The current decimal value is: ${valueAsStr}, but the one has been truncated to the '${result}' value due to tedious limitation's reason. Please see the product documentation to get more details.`);
+        return result;
+    }
+
+    /**
+     * Add column definisions to the bulkLoad instance.
+     * @param bulkLoad BulkLoad instance
+     * @param rows array of the generated rows
+     * @see {@link http://tediousjs.github.io/tedious/bulk-load.html} for get more details.
+     */
+    private addColumnToBulkLoad(bulkLoad: BulkLoad, rows: Array<Array<DbParameter>>) {
+
+        for (let column of rows[0]) {
+
+            const tediousSqlType = DbTypeTediousConvertor.convertToTediousSqlType(column.dbType);
+            let options: BulkLoadColumnOpts;
+
+            if (tediousSqlType.type === TYPES.NChar.type ||
+                tediousSqlType.type === TYPES.Char.type ||
+                tediousSqlType.type === TYPES.NVarChar.type ||
+                tediousSqlType.type === TYPES.VarChar.type ||
+                tediousSqlType.type === TYPES.VarBinary.type ||
+                tediousSqlType.type === TYPES.Binary.type ||
+                tediousSqlType.type === TYPES.NText.type ||
+                tediousSqlType.type === TYPES.Text.type) {
+
+                options = { length: column.characterMaximumLength, nullable: column.isNulluble };
+
+            } else if (tediousSqlType.type === TYPES.Numeric.type ||
+                tediousSqlType.type === TYPES.Decimal.type) {
+
+                options = { precision: column.numericPrecision, scale: column.numericScale, nullable: column.isNulluble };
+
+            } else if (tediousSqlType.type === TYPES.Time.type || 
+                tediousSqlType.type === TYPES.DateTime2.type || 
+                tediousSqlType.type === TYPES.DateTimeOffset.type) {
+
+                options = {
+                    scale: column.numericScale,
+                    nullable: column.isNulluble
+                };
+
+            } else {
+                options = { nullable: column.isNulluble };
+            }
+            
+            bulkLoad.addColumn(column.parameterName, tediousSqlType, options);
+        }
+
+    }
 }
 
 export namespace MsSqlDatabaseRepository {
@@ -282,6 +369,7 @@ export namespace MsSqlDatabaseRepository {
                 return DbType.DateTime;
 
             case "decimal":
+            case "numeric":
                 return DbType.Decimal;
 
             case "float":
@@ -418,7 +506,13 @@ export namespace MsSqlDatabaseRepository {
             colInfo.dbType = this.getDbType(colValue.value);
 
             colValue = this.columns.filter(col => col.metadata.colName === "CHARACTER_MAXIMUM_LENGTH")[0];
-            colInfo.size = colValue.value;
+            colInfo.characterMaximumLength = colValue.value;
+
+            colValue = this.columns.filter(col => col.metadata.colName === "NUMERIC_PRECISION")[0];
+            colInfo.numericPrecision = colValue.value;
+
+            colValue = this.columns.filter(col => col.metadata.colName === "NUMERIC_SCALE")[0];
+            colInfo.numericScale = colValue.value;
 
             colValue = this.columns.filter(col => col.metadata.colName === "COLUMN_NAME")[0];
             colInfo.parameterName = colValue.value;

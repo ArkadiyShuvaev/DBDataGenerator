@@ -1,6 +1,6 @@
 ﻿import {DbParameter} from "../ColumnInformation/DbParameter";
 import {DbType} from "../ColumnInformation/DbType";
-import {IntGenerationSettings, CharacterGenerationSettings } from "../Abstractions/IGenerationSettings";
+import {IntGenerationSettings, CharacterGenerationSettings, DecimalGenerationSettings } from "../Abstractions/IGenerationSettings";
 
 import {IDataGenerator} from "../Abstractions/IDataGenerator";
 import {IColumnConfigSettings} from "../Abstractions/IAppConfig";
@@ -44,20 +44,25 @@ export class DataGeneratorInvoker {
             case DbType.NVarChar:
 
                 const columnRegularExpression =
-                    (columnGlobalSettings == null)
+                    (columnGlobalSettings == null || columnGlobalSettings.regularExpression == null)
                         ? ""
-                        : (columnGlobalSettings.regularExpression == null ? "" : columnGlobalSettings.regularExpression);
+                        : columnGlobalSettings.regularExpression;
 
-                const charSettings = new CharacterGenerationSettings(columnMeta.isNulluble, columnMeta.size);
+                const charSettings = new CharacterGenerationSettings(columnMeta.isNulluble, columnMeta.characterMaximumLength);
                 charSettings.regularExpression = columnRegularExpression;
 
                 return this.generator.generateRandomCharacterValues(charSettings, generatedRowCount, percentOfNullsPerColumn);
 
+            case DbType.Decimal:
+                const decimalSettings = new DecimalGenerationSettings(columnMeta.isNulluble);
+                decimalSettings.precision = this.getPrecision(columnMeta.numericPrecision, columnGlobalSettings);
+                decimalSettings.scale = this.getScale(columnMeta.numericScale, columnGlobalSettings);
 
+                return this.generator.generateRandomDecimalValues(decimalSettings, generatedRowCount, percentOfNullsPerColumn);
 
             default:
                 throw new TypeError(
-                    `The '${columnMeta.dbType.toString()}' dbType of the '${columnMeta.parameterName
+                    `The '${DbType[columnMeta.dbType]}' dbType of the '${columnMeta.parameterName
                     }' column is not supported.`);
 
         }
@@ -65,12 +70,25 @@ export class DataGeneratorInvoker {
     }
 
     private getMinimumIntValue(defaultValue: number, columnGlobalSettings: IColumnConfigSettings | null): number {
-        return columnGlobalSettings === null
-            ? defaultValue : (columnGlobalSettings.minimumNumber == null ? defaultValue : columnGlobalSettings.minimumNumber);
+        return columnGlobalSettings == null || columnGlobalSettings.minimumNumber == null
+            ? defaultValue
+            : columnGlobalSettings.minimumNumber;
     }
 
     private getMaximumIntValue(defaultValue: number, columnGlobalSettings: IColumnConfigSettings | null): number {
         return columnGlobalSettings === null
             ? defaultValue : (columnGlobalSettings.maximumNumber == null ? defaultValue : columnGlobalSettings.maximumNumber);
+    }
+
+    getPrecision(defaultValue: number, columnGlobalSettings: IColumnConfigSettings | null): number {
+        return columnGlobalSettings == null || columnGlobalSettings.precision == null
+            ? defaultValue
+            : columnGlobalSettings.precision;
+    }
+
+    getScale(defaultValue: number, columnGlobalSettings: IColumnConfigSettings | null): number {
+        return columnGlobalSettings == null || columnGlobalSettings.scale == null
+            ? defaultValue
+            : columnGlobalSettings.scale;
     }
 }

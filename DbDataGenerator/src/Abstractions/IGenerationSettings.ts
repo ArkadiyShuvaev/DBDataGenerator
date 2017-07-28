@@ -15,7 +15,7 @@ export interface ICharacterGenerationSettings extends IBaseGenerationSettings {
     /**
      * defines the string length. The maximum storage size (2^31-1 bytes) indicates the MAX value
      */
-    size: number;
+    length: number;
 }
 
 export interface IIntGenerationSettings extends IBaseGenerationSettings {
@@ -29,6 +29,19 @@ export interface IIntGenerationSettings extends IBaseGenerationSettings {
      */
     maximumValue: number;
 }
+
+export interface IDecimalGenerationSettings extends IBaseGenerationSettings {
+    /**
+     * The maximum total number of decimal digits that will be stored, both to the left and to the right of the decimal point.
+     */
+    precision: number;
+
+    /**
+     * The number of decimal digits that will be stored to the right of the decimal point.
+     */
+    scale: number;
+}
+
 
 
 export class BaseGenerationSettings implements IBaseGenerationSettings {
@@ -44,11 +57,11 @@ export class BaseGenerationSettings implements IBaseGenerationSettings {
 export class CharacterGenerationSettings extends BaseGenerationSettings implements ICharacterGenerationSettings  {
     constructor(isNullValuesAllowed: boolean, size: number, sourceResourceDataListFullPath?: string) {
         super(isNullValuesAllowed, sourceResourceDataListFullPath);
-        this.size = size;
+        this.length = size;
     }
 
     regularExpression: string;
-    size: number;
+    length: number;
 }
 
 export class IntGenerationSettings extends BaseGenerationSettings implements IIntGenerationSettings {
@@ -58,5 +71,20 @@ export class IntGenerationSettings extends BaseGenerationSettings implements IIn
     
     maximumValue = 2147483647;
     minimalValue = -2147483648;
+}
+
+export class DecimalGenerationSettings extends BaseGenerationSettings implements IDecimalGenerationSettings {
+
+    precision: number;
+    scale: number;
+
+    constructor(isNullValuesAllowed: boolean, sourceResourceDataListFullPath?: string) {
+        super(isNullValuesAllowed, sourceResourceDataListFullPath);
+        this.precision = this.precisionDefaultValue;
+        this.scale = this.scaleDefaultValue;
+    }
+    
+    private precisionDefaultValue = 18;
+    private scaleDefaultValue = 2;
 }
 

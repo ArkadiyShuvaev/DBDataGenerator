@@ -13,8 +13,30 @@ export interface IColumnConfigSettings {
     regularExpression: string;
     allowNulls: boolean;
     percentOfNullsPerColumn: number;
+    
+    /**
+     * For the Int types.
+     * The minimum value of the generated data range. For example, the minimum value for the Int32 type is -2147483648.
+     */
     minimumNumber: number;
+
+    /**
+     * For the Int types.
+     * The minimum value of the generated data range. For example, the maximum value for the Int32 type is 2147483647.
+     */
     maximumNumber: number;
+
+    /**
+     * For the decimal and numeric types.
+     * The maximum total number of decimal digits that will be stored, both to the left and to the right of the decimal point.
+     */
+    precision: number;
+
+    /**
+     * For the decimal and numeric types.
+     * The number of decimal digits that will be stored to the right of the decimal point.
+     */
+    scale: number;
 }
 
 export interface ITableConfigSettings {
