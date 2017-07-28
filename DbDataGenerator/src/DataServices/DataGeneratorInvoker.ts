@@ -6,7 +6,7 @@ import {IDataGenerator} from "../Abstractions/IDataGenerator";
 import {IColumnConfigSettings} from "../Abstractions/IAppConfig";
 
 export class DataGeneratorInvoker {
-    private readonly generator;
+    private readonly generator: IDataGenerator;
 
     constructor(generator: IDataGenerator) {
         this.generator = generator;

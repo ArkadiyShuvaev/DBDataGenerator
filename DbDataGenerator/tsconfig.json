@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "module": "commonjs",
     "strictNullChecks": true,
     "noEmitOnError": true,
     "removeComments": true,
     "sourceMap": true,
     "target": "es6",
-    "outDir":"out"
+    "outDir": "out"
   },
   "exclude": [
     "node_modules"
