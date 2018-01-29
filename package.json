@@ -1,0 +1,15 @@
+{
+  "name": "dbdataconfigurator",
+  "version": "1.0.0",
+  "description": "Create configuration file for the DbDataGenerator application.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "configurator"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {}
+}

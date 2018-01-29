@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "module": "es6",
+    "strictNullChecks": true,
+    "allowSyntheticDefaultImports": true,
+    "noEmitOnError": true,
+    "removeComments": true,
+    "sourceMap": true,
+    "jsx": "preserve",
+    "target": "es6",
+    "outDir": "out",
+    "baseUrl": "src",
+    "moduleResolution": "node"
+  },
+  "exclude": [
+    "node_modules",
+    "node_modules/@types"
+  ],
+  "include": [
+    "src"
+  ]
+}

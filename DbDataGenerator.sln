@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "DbDataGenerator", "DbDataGenerator\DbDataGenerator.njsproj", "{68041FC6-2E46-4901-9DAB-FE24973C44C2}"
 EndProject
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "ConfigFileConfigurator", "ConfigFileConfigurator\ConfigFileConfigurator.njsproj", "{EC9CB7DE-12B4-49D9-9A0A-95AB683B5C3D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{68041FC6-2E46-4901-9DAB-FE24973C44C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68041FC6-2E46-4901-9DAB-FE24973C44C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68041FC6-2E46-4901-9DAB-FE24973C44C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC9CB7DE-12B4-49D9-9A0A-95AB683B5C3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC9CB7DE-12B4-49D9-9A0A-95AB683B5C3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC9CB7DE-12B4-49D9-9A0A-95AB683B5C3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC9CB7DE-12B4-49D9-9A0A-95AB683B5C3D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

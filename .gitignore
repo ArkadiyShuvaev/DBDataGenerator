@@ -71,6 +71,7 @@ artifacts/
 *.scc
 
 *.js
+*.jsx
 *.js.map
 
 # Chutzpah Test files
@@ -262,3 +263,4 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/*/package-lock.json
